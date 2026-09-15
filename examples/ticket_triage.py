@@ -30,6 +30,17 @@ from pydantic import BaseModel, Field
 
 import callm
 
+if not os.environ.get("OPENAI_API_KEY"):
+    raise SystemExit(
+        "No API key found.\n\n"
+        "Set OPENAI_API_KEY in this same terminal window, then run the script again:\n"
+        '  macOS/Linux:  export OPENAI_API_KEY="sk-..."\n'
+        '  PowerShell:   $env:OPENAI_API_KEY="sk-..."\n\n'
+        "Using another OpenAI-compatible provider? Also set OPENAI_BASE_URL and "
+        "CALLM_EXAMPLE_MODEL (see the docstring at the top of this file).\n"
+        "No key at all? Try examples/offline_demo.py, which needs none."
+    )
+
 client = openai.OpenAI(max_retries=0)  # callm owns retries
 MODEL = os.environ.get("CALLM_EXAMPLE_MODEL", "gpt-4o-mini")
 
