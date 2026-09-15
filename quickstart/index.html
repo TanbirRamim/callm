@@ -402,6 +402,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#try-everything-without-an-api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try everything without an API key
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#next-steps" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1092,6 +1103,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#try-everything-without-an-api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try everything without an API key
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#next-steps" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1201,6 +1223,14 @@ the cost of every call.</p>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="n">model</span><span class="o">=</span><span class="s2">"gpt-4o-mini"</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">question</span><span class="p">}]</span>
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="p">)</span>
 </code></pre></div>
+<h2 id="try-everything-without-an-api-key">Try everything without an API key<a class="headerlink" href="#try-everything-without-an-api-key" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/TanbirRamim/callm/main/examples/offline_demo.py
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">CALLM_HOME</span><span class="o">=</span>/tmp/callm-demo<span class="w"> </span>python<span class="w"> </span>offline_demo.py
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nv">CALLM_HOME</span><span class="o">=</span>/tmp/callm-demo<span class="w"> </span>callm<span class="w"> </span>stats
+</code></pre></div>
+<p>The script drives the real OpenAI and Anthropic SDKs against a scripted fake server, so you can
+watch a retry, a cache hit, a fallback, a blocked over-budget call and a flagged injection
+happen, then inspect the recorded costs.</p>
 <h2 id="next-steps">Next steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../how-it-works/">How it works</a> — interception and the middleware stack</li>
