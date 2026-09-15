@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Reproducible offline benchmarks (`benchmarks/run.py`) and a benchmarks page in the docs.
+- Demo GIF, before/after example and a comparison with related tools in the README.
+
 ## [0.1.0] - 2026-09-15
 
 Initial release.

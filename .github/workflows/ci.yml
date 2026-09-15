@@ -23,9 +23,13 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --python 3.12
-      - run: uv run ruff check src tests scripts
-      - run: uv run ruff format --check src tests scripts
+      - run: uv run ruff check src tests scripts examples benchmarks
+      - run: uv run ruff format --check src tests scripts examples benchmarks
       - run: uv run mypy
+      - name: Benchmarks and offline demo still run
+        run: |
+          uv run python benchmarks/run.py --quick
+          CALLM_HOME="$RUNNER_TEMP/callm-demo" uv run python examples/offline_demo.py
 
   test:
     name: Tests (${{ matrix.os }}, Python ${{ matrix.python }})
@@ -46,13 +50,12 @@ jobs:
         run: uv run pytest
       - name: Run tests with coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
-        run: uv run pytest --cov=callm --cov-report=xml --cov-report=term --cov-fail-under=90
-      - uses: codecov/codecov-action@v7
-        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
-        with:
-          files: coverage.xml
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
+        run: uv run pytest --cov=callm --cov-report=term --cov-fail-under=90
+      - name: Coverage summary
+        if: always() && matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        run: |
+          echo "## Coverage" >> "$GITHUB_STEP_SUMMARY"
+          uv run coverage report --format=markdown >> "$GITHUB_STEP_SUMMARY"
 
   minimal-install:
     name: Install without extras

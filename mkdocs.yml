@@ -68,5 +68,6 @@ nav:
       - Support chatbot: cookbook/chatbot.md
       - RAG with citations: cookbook/rag.md
       - Data extraction: cookbook/data-extraction.md
+  - Benchmarks: benchmarks.md
   - API reference: api-reference.md
   - FAQ & limitations: faq.md

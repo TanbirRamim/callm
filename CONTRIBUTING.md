@@ -27,8 +27,9 @@ uv run pre-commit install    # optional: lint on commit
 ```bash
 uv run pytest                          # full suite, offline, ~3 seconds
 uv run pytest --cov=callm              # coverage (CI requires 90%+)
-uv run ruff check src tests scripts
-uv run ruff format src tests scripts
+uv run ruff check src tests scripts examples benchmarks
+uv run ruff format src tests scripts examples benchmarks
+uv run python benchmarks/run.py         # offline benchmarks
 uv run mypy                            # strict mode
 uv run --only-group docs mkdocs serve  # docs at http://127.0.0.1:8000
 ```

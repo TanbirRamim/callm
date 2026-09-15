@@ -42,6 +42,10 @@ would cost more than 25¢, stripped of emails and phone numbers before it leaves
 scanned for prompt injection, validated into a `Summary` object, and recorded in a local cost
 dashboard.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/TanbirRamim/callm/main/docs/assets/demo.gif" alt="callm offline demo: a retry, a cache hit, a fallback to Claude, a blocked expensive call and a flagged prompt injection, followed by the callm stats dashboard" width="900">
+</p>
+
 ## Why callm
 
 Every team shipping LLM features writes the same production checklist: retry on 429s, cache
@@ -59,6 +63,84 @@ callm is a library: install it, add a decorator, ship.
 - **No required dependencies.** The core is standard library only; features that need extra
   packages are optional extras.
 - **Sync and async.** Same behaviour for `def` and `async def`, including concurrent tasks.
+
+### Before and after
+
+A simplified version of the glue code callm replaces, for one provider and without fallback,
+budgets or telemetry:
+
+<table>
+<tr><th>Without callm</th><th>With callm</th></tr>
+<tr><td>
+
+```python
+import hashlib, json, re
+from tenacity import (retry, stop_after_attempt,
+    wait_random_exponential, retry_if_exception_type)
+import openai
+from pydantic import ValidationError
+
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
+_cache = {}
+PRICES = {"gpt-4o": (2.50, 10.00)}  # $/1M tokens
+
+@retry(
+    retry=retry_if_exception_type(
+        (openai.RateLimitError, openai.APIConnectionError,
+         openai.InternalServerError)),
+    wait=wait_random_exponential(max=30),
+    stop=stop_after_attempt(4),
+)
+def _create(**kwargs):
+    return client.chat.completions.create(**kwargs)
+
+def summarize(text: str) -> Summary:
+    text = EMAIL.sub("[EMAIL]", text)
+    messages = [{"role": "user", "content": text}]
+    key = hashlib.sha256(json.dumps(messages).encode()).hexdigest()
+    if key in _cache:
+        return _cache[key]
+    for _ in range(3):
+        response = _create(model="gpt-4o", messages=messages)
+        usage = response.usage
+        inp, out = PRICES["gpt-4o"]
+        log_cost((usage.prompt_tokens * inp
+                  + usage.completion_tokens * out) / 1e6)
+        content = response.choices[0].message.content
+        try:
+            result = Summary.model_validate_json(content)
+            _cache[key] = result
+            return result
+        except ValidationError as exc:
+            messages += [
+                {"role": "assistant", "content": content},
+                {"role": "user", "content": f"Fix: {exc}"},
+            ]
+    raise RuntimeError("model never returned a valid Summary")
+```
+
+</td><td>
+
+```python
+from callm import callm
+
+@callm(cache=True, retry=3, block_pii=True,
+       output_schema=Summary)
+def summarize(text: str):
+    return client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": text}],
+    )
+```
+
+Plus what the hand-written version lacks:
+retry-after headers, phone/card/SSN/IBAN
+masking, persistent cache, provider fallback,
+budgets, injection detection, async support,
+telemetry and `callm stats`.
+
+</td></tr>
+</table>
 
 ## Quickstart
 
@@ -268,6 +350,32 @@ $ callm info                             # environment and installed extras
 | `tokens` | `tiktoken` | exact OpenAI token estimates for the cost guard |
 | `cli` | `rich` | prettier `callm stats` tables |
 | `all` | everything above | |
+
+## How callm compares
+
+callm is not the only tool in this space. An honest summary of where each one fits:
+
+| Tool | What it is | Choose it when |
+|---|---|---|
+| **callm** | A decorator around your existing OpenAI, Anthropic and Gemini SDK calls: retries, caching, fallback, cost limits, PII masking, injection detection, validation and telemetry, all in-process | You want production hardening without changing how you call the SDKs or running any service |
+| [LiteLLM](https://github.com/BerriAI/litellm) | A unified `litellm.completion()` API for 100+ providers, with a router (retries, fallbacks), caching (including semantic), cost tracking, and a proxy server that adds budgets, virtual keys and guardrails | You want one API across many providers or a central LLM gateway for a team |
+| [Instructor](https://github.com/567-labs/instructor) | Structured outputs from LLMs with Pydantic models and automatic re-asking, across many providers | Structured extraction is the main problem you need to solve |
+| [Guardrails AI](https://github.com/guardrails-ai/guardrails) | A validation framework with a hub of input/output validators (PII, jailbreak detection, and many more) | You need a broad catalogue of validators or custom guard pipelines |
+
+The trade-off: callm covers fewer providers than LiteLLM and fewer validators than Guardrails,
+in exchange for zero code changes, zero required dependencies and no infrastructure.
+
+## Benchmarks
+
+Measured offline with the real OpenAI SDK against a fake server
+([method and caveats](https://tanbirramim.github.io/callm/benchmarks/), reproduce with
+`python benchmarks/run.py`):
+
+- **Overhead:** +0.06 ms per call with default settings, +0.10 ms with PII masking, injection
+  detection and budgets enabled.
+- **Cache:** 91% lower spend on support/FAQ-style traffic; 2% on prompts that rarely repeat.
+- **Reliability:** with 20% random provider failures, success rises from 79.9% (plain SDK) to
+  99.4% with `retry=2` and 100% with a fallback deployment.
 
 ## Design decisions and limits
 
