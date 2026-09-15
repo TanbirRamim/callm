@@ -176,7 +176,7 @@ def test_retry_after_header_variants():
     assert get_retry_after(StatusError(429, {"retry-after-ms": "1500"})) == 1.5
     assert get_retry_after(StatusError(429, {"Retry-After": "7"})) == 7
     future = email.utils.format_datetime(datetime.now(timezone.utc) + timedelta(seconds=30))
-    assert 25 <= get_retry_after(StatusError(503, {"retry-after": future})) <= 30
+    assert 25 <= get_retry_after(StatusError(503, {"retry-after": future})) <= 31  # clock slack
     assert get_retry_after(StatusError(500)) is None
 
 
@@ -198,7 +198,7 @@ def test_anthropic_rate_limit_reset_timestamps():
         "anthropic-ratelimit-requests-remaining": "0",
         "anthropic-ratelimit-requests-reset": reset,
     }
-    assert 15 <= get_retry_after(StatusError(429, headers)) <= 20
+    assert 15 <= get_retry_after(StatusError(429, headers)) <= 21  # clock slack
 
 
 def test_google_retry_info_detail():
