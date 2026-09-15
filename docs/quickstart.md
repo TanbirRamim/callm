@@ -96,6 +96,18 @@ async def ask(question: str):
     )
 ```
 
+## Try everything without an API key
+
+```bash
+curl -O https://raw.githubusercontent.com/TanbirRamim/callm/main/examples/offline_demo.py
+CALLM_HOME=/tmp/callm-demo python offline_demo.py
+CALLM_HOME=/tmp/callm-demo callm stats
+```
+
+The script drives the real OpenAI and Anthropic SDKs against a scripted fake server, so you can
+watch a retry, a cache hit, a fallback, a blocked over-budget call and a flagged injection
+happen, then inspect the recorded costs.
+
 ## Next steps
 
 - [How it works](how-it-works.md) — interception and the middleware stack

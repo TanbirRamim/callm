@@ -181,10 +181,13 @@ fallback to Claude during an outage, a blocked expensive call and a flagged inje
 
 ```bash
 pip install "callm-toolkit[openai,anthropic,validation]"
+curl -O https://raw.githubusercontent.com/TanbirRamim/callm/main/examples/offline_demo.py
 export CALLM_HOME=/tmp/callm-demo      # keep demo data out of ~/.callm
-python examples/offline_demo.py
+python offline_demo.py
 callm stats
 ```
+
+(If you cloned the repository, run `python examples/offline_demo.py` instead.)
 
 ## Features
 
