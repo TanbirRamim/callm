@@ -1107,7 +1107,7 @@
 <li>the telemetry store — SQLite at <code>~/.callm/callm.db</code> by default (disable with
   <code>callm.configure(telemetry=False)</code>, <code>CALLM_TELEMETRY=0</code>, or <code>@callm(telemetry=False)</code>)</li>
 <li><code>on_call</code> hooks — <code>callm.configure(on_call=[send_to_metrics])</code></li>
-<li>OpenTelemetry — <code>callm.configure(otel=True)</code> with <code>pip install "callm[otel]"</code></li>
+<li>OpenTelemetry — <code>callm.configure(otel=True)</code> with <code>pip install "callm-toolkit[otel]"</code></li>
 <li><code>callm.last_call()</code> — the most recent record in the current context</li>
 </ul>
 <p>Telemetry failures are logged and never break a call.</p>

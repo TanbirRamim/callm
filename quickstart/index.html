@@ -1097,12 +1097,12 @@
 
 <h1 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h1>
 <h2 id="1-install">1. Install<a class="headerlink" href="#1-install" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"callm[openai,validation] @ git+https://github.com/TanbirRamim/callm"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"callm-toolkit[openai,validation]"</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>callm is not on PyPI yet. Until the first release, install from GitHub as shown; afterwards
-<code>pip install "callm[openai,validation]"</code> works the same way.</p>
+<p>The package is published on PyPI as <code>callm-toolkit</code>. You import it as <code>callm</code>, and the
+command-line tool is <code>callm</code>.</p>
 </div>
 <p>Pick the extras you need: <code>openai</code>, <code>anthropic</code>, <code>google</code>, <code>validation</code> (Pydantic), <code>cache</code>
 (local embeddings for semantic caching), <code>security</code> (spaCy name detection), <code>redis</code>, <code>otel</code>,
