@@ -4,7 +4,7 @@ The official OpenAI and Anthropic SDKs are used for real; only their HTTP transp
 by a scripted fake server, so you can see retries, fallback, caching, PII masking, structured
 output and cost tracking happen.
 
-    pip install "callm[openai,anthropic,validation]"
+    pip install "callm-toolkit[openai,anthropic,validation]"
     python examples/offline_demo.py
 
 Demo data goes to $CALLM_HOME (a temporary directory unless you set it); the script prints

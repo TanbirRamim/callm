@@ -2,7 +2,7 @@
 
 ```python
 @callm(cache=True)                        # exact-match cache
-@callm(cache="semantic")                  # + semantic matching (needs callm[cache])
+@callm(cache="semantic")                  # + semantic matching (needs callm-toolkit[cache])
 @callm(cache=CacheConfig(ttl=3600, semantic=True, threshold=0.93))
 ```
 

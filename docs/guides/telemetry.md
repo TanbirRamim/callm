@@ -21,7 +21,7 @@ Records **never contain prompt or completion text**.
 - the telemetry store — SQLite at `~/.callm/callm.db` by default (disable with
   `callm.configure(telemetry=False)`, `CALLM_TELEMETRY=0`, or `@callm(telemetry=False)`)
 - `on_call` hooks — `callm.configure(on_call=[send_to_metrics])`
-- OpenTelemetry — `callm.configure(otel=True)` with `pip install "callm[otel]"`
+- OpenTelemetry — `callm.configure(otel=True)` with `pip install "callm-toolkit[otel]"`
 - `callm.last_call()` — the most recent record in the current context
 
 Telemetry failures are logged and never break a call.

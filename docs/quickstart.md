@@ -3,12 +3,12 @@
 ## 1. Install
 
 ```bash
-pip install "callm[openai,validation] @ git+https://github.com/TanbirRamim/callm"
+pip install "callm-toolkit[openai,validation]"
 ```
 
 !!! note
-    callm is not on PyPI yet. Until the first release, install from GitHub as shown; afterwards
-    `pip install "callm[openai,validation]"` works the same way.
+    The package is published on PyPI as `callm-toolkit`. You import it as `callm`, and the
+    command-line tool is `callm`.
 
 Pick the extras you need: `openai`, `anthropic`, `google`, `validation` (Pydantic), `cache`
 (local embeddings for semantic caching), `security` (spaCy name detection), `redis`, `otel`,

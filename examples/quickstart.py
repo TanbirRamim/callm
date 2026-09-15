@@ -1,6 +1,6 @@
 """The smallest useful callm program.
 
-pip install "callm[openai]"
+pip install "callm-toolkit[openai]"
 export OPENAI_API_KEY=...
 python examples/quickstart.py
 callm stats

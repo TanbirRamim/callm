@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/logo.svg" alt="callm" width="96" height="96">
+<img src="https://raw.githubusercontent.com/TanbirRamim/callm/main/docs/assets/logo.svg" alt="callm" width="96" height="96">
 
 # callm
 
@@ -12,7 +12,8 @@ you already use. No proxy. No database server. Zero required dependencies.
 
 [![CI](https://github.com/TanbirRamim/callm/actions/workflows/ci.yml/badge.svg)](https://github.com/TanbirRamim/callm/actions/workflows/ci.yml)
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/callm-toolkit.svg)](https://pypi.org/project/callm-toolkit/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/TanbirRamim/callm/blob/main/LICENSE)
 
 [Documentation](https://tanbirramim.github.io/callm) ·
 [Quickstart](#quickstart) ·
@@ -62,11 +63,10 @@ callm is a library: install it, add a decorator, ship.
 ## Quickstart
 
 ```bash
-pip install "callm[openai,validation] @ git+https://github.com/TanbirRamim/callm"   # or [all]
+pip install "callm-toolkit[openai,validation]"   # or callm-toolkit[all]
 ```
 
-> callm is not on PyPI yet; until the first release, install it from GitHub as shown. Once
-> published, `pip install "callm[openai,validation]"` will do the same.
+The package is published as `callm-toolkit`; you import it as `callm` and the CLI is `callm`.
 
 ```python
 import openai
@@ -98,7 +98,7 @@ server and walks through a rate-limit retry, PII masking, schema validation, a c
 fallback to Claude during an outage, a blocked expensive call and a flagged injection:
 
 ```bash
-pip install "callm[openai,anthropic,validation] @ git+https://github.com/TanbirRamim/callm"
+pip install "callm-toolkit[openai,anthropic,validation]"
 export CALLM_HOME=/tmp/callm-demo      # keep demo data out of ~/.callm
 python examples/offline_demo.py
 callm stats
@@ -187,7 +187,7 @@ response = callm.complete("gemini/gemini-2.5-flash", "Summarize: ...", max_token
 response.text, response.usage.total_tokens, response.cost, response.raw
 ```
 
-More in the [cookbook](docs/cookbook): a support chatbot, RAG answers with citations and data
+More in the [cookbook](https://tanbirramim.github.io/callm/cookbook/): a support chatbot, RAG answers with citations and data
 extraction.
 
 ## How it works
@@ -241,7 +241,7 @@ callm.configure(
 | `CALLM_OTEL=1` | Export OpenTelemetry spans |
 | `CALLM_DISABLED=1` | Kill switch: decorated functions run untouched |
 
-Every option of `@callm` is documented in the [API reference](docs/api-reference.md).
+Every option of `@callm` is documented in the [API reference](https://tanbirramim.github.io/callm/api-reference/).
 
 ## The `callm` CLI
 
@@ -291,7 +291,7 @@ $ callm info                             # environment and installed extras
 
 ## Contributing
 
-Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). The test suite runs
+Contributions are welcome — see [CONTRIBUTING.md](https://github.com/TanbirRamim/callm/blob/main/CONTRIBUTING.md). The test suite runs
 entirely offline against the real provider SDKs with mocked HTTP transports:
 
 ```bash
@@ -301,4 +301,4 @@ uv run pytest
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/TanbirRamim/callm/blob/main/LICENSE)

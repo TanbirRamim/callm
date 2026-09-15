@@ -141,7 +141,7 @@ def test_semantic_cache_requires_an_embedder(openai_client, monkeypatch):
     monkeypatch.setattr(builtins, "__import__", no_sentence_transformers)
     monkeypatch.setattr("callm.middleware.cache._default_embedder", [])
     ask = make_ask(openai_client, cache="semantic")
-    with pytest.raises(callm.MissingDependencyError, match="callm\\[cache\\]"):
+    with pytest.raises(callm.MissingDependencyError, match="callm-toolkit\\[cache\\]"):
         ask("hello")
 
 

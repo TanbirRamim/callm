@@ -80,7 +80,7 @@ def test_ner_requires_spacy(monkeypatch):
 
     monkeypatch.setattr(builtins, "__import__", fake_import)
     monkeypatch.setattr("callm.security.pii._spacy_models", {})
-    with pytest.raises(MissingDependencyError, match="callm\\[security\\]"):
+    with pytest.raises(MissingDependencyError, match="callm-toolkit\\[security\\]"):
         PIIRedactor(ner=True).find("Alice met Bob")
 
 

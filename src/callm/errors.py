@@ -28,7 +28,7 @@ class MissingDependencyError(CallmError, ImportError):
         self.extra = extra
         super().__init__(
             f"{feature} requires the '{package}' package. "
-            f"Install it with: pip install 'callm[{extra}]'"
+            f"Install it with: pip install 'callm-toolkit[{extra}]'"
         )
 
 

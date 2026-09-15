@@ -53,8 +53,8 @@ def summarize(text: str) -> MyResponse:
 ## Install
 
 ```bash
-pip install "callm[openai] @ git+https://github.com/TanbirRamim/callm"   # plus the providers you use
-pip install "callm[all] @ git+https://github.com/TanbirRamim/callm"      # everything
+pip install "callm-toolkit[openai]"   # plus the providers you use
+pip install "callm-toolkit[all]"      # everything
 ```
 
 Continue with the [quickstart](quickstart.md).

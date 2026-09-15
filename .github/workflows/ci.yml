@@ -74,7 +74,7 @@ jobs:
           try:
               callm.complete("gpt-4o-mini", "hi")
           except callm.MissingDependencyError as exc:
-              assert "callm[openai]" in str(exc)
+              assert "callm-toolkit[openai]" in str(exc)
           else:
               raise SystemExit("expected MissingDependencyError")
           print("ok", callm.__version__)

@@ -1,6 +1,6 @@
 """Concurrent async calls under a shared session budget, with PII masking.
 
-pip install "callm[openai]"
+pip install "callm-toolkit[openai]"
 export OPENAI_API_KEY=...
 python examples/async_budgets.py
 """

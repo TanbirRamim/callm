@@ -3,7 +3,7 @@ requires = ["hatchling>=1.24"]
 build-backend = "hatchling.build"
 
 [project]
-name = "callm"
+name = "callm-toolkit"
 dynamic = ["version"]
 description = "The production toolkit for LLM calls: caching, retries, fallback, cost tracking, security and structured output in one decorator."
 readme = "README.md"
@@ -41,7 +41,7 @@ otel = ["opentelemetry-api>=1.20"]
 tokens = ["tiktoken>=0.7"]
 cli = ["rich>=13.0"]
 all = [
-  "callm[openai,anthropic,google,validation,cache,security,redis,otel,tokens,cli]",
+  "callm-toolkit[openai,anthropic,google,validation,cache,security,redis,otel,tokens,cli]",
 ]
 
 [project.scripts]

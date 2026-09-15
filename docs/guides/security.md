@@ -37,7 +37,7 @@ from callm import PIIConfig
 PIIConfig(
     entities=("email", "phone", "ssn", "credit_card", "ip_address", "iban"),
     action="mask",                 # or "block": raise PIIDetectedError, send nothing
-    ner=False,                     # True: also detect names (pip install "callm[security]"
+    ner=False,                     # True: also detect names (pip install "callm-toolkit[security]"
     ner_model="en_core_web_sm",    #        and python -m spacy download en_core_web_sm)
     roles=("system", "user", "assistant", "tool"),
 )

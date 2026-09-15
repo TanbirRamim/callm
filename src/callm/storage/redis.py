@@ -1,6 +1,6 @@
 """Redis cache backend for sharing cached responses across processes and hosts.
 
-``pip install 'callm[redis]'``::
+``pip install 'callm-toolkit[redis]'``::
 
     from callm.storage.redis import RedisCacheStore
     callm.configure(cache_store=RedisCacheStore("redis://localhost:6379/0"))

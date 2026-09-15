@@ -1,6 +1,6 @@
 """Extract structured data with automatic repair and a fallback provider.
 
-pip install "callm[anthropic,openai,validation]"
+pip install "callm-toolkit[anthropic,openai,validation]"
 export ANTHROPIC_API_KEY=... OPENAI_API_KEY=...
 python examples/structured_output.py
 """

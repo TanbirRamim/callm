@@ -19,7 +19,7 @@ def summarize_article(url: str):
 result = summarize_article("https://example.com/article")   # a validated Summary
 ```
 
-Requires `pip install "callm[validation]"` (Pydantic v2). `output_schema` accepts anything
+Requires `pip install "callm-toolkit[validation]"` (Pydantic v2). `output_schema` accepts anything
 Pydantic can validate: models, dataclasses, `TypedDict`s, `list[Model]`, `dict[str, int]`...
 
 ## What happens

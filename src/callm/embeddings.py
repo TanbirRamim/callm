@@ -38,7 +38,7 @@ def cosine_similarity(a: Sequence[float], b: Sequence[float]) -> float:
 
 
 class SentenceTransformerEmbedder:
-    """Local embeddings with ``sentence-transformers`` (``pip install 'callm[cache]'``)."""
+    """Local embeddings with ``sentence-transformers`` (``pip install 'callm-toolkit[cache]'``)."""
 
     _models: dict[str, Any] = {}
     _lock = threading.Lock()

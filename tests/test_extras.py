@@ -199,11 +199,11 @@ def test_missing_sdks_raise_helpful_errors(monkeypatch):
 
     for name in ("openai", "anthropic", "google.genai", "google"):
         monkeypatch.setitem(sys.modules, name, None)
-    with pytest.raises(MissingDependencyError, match="callm\\[openai\\]"):
+    with pytest.raises(MissingDependencyError, match="callm-toolkit\\[openai\\]"):
         OpenAIProvider("openai").client()
-    with pytest.raises(MissingDependencyError, match="callm\\[anthropic\\]"):
+    with pytest.raises(MissingDependencyError, match="callm-toolkit\\[anthropic\\]"):
         AnthropicProvider().client()
-    with pytest.raises(MissingDependencyError, match="callm\\[google\\]"):
+    with pytest.raises(MissingDependencyError, match="callm-toolkit\\[google\\]"):
         GoogleProvider().client()
     # Without SDK types, synthesized responses fall back to attribute dicts.
     response = LLMResponse(text="t", provider="x", model="m", usage=Usage(1, 2))

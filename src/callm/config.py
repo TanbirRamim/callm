@@ -78,7 +78,7 @@ class CacheConfig:
     ``semantic=True`` additionally matches requests whose final user message is
     semantically similar (cosine similarity >= ``threshold``) to a cached one, provided
     everything else (system prompt, earlier turns, parameters) is identical. Semantic
-    matching needs an embedder (``pip install 'callm[cache]'`` or pass ``embedder=``).
+    matching needs an embedder (``pip install 'callm-toolkit[cache]'`` or pass ``embedder=``).
     """
 
     ttl: float | None = None
@@ -120,7 +120,7 @@ class PIIConfig:
     :class:`~callm.errors.PIIDetectedError` instead.
 
     ``ner=True`` (or including ``"person"`` in ``entities``) adds person-name detection
-    with spaCy (``pip install 'callm[security]'`` and
+    with spaCy (``pip install 'callm-toolkit[security]'`` and
     ``python -m spacy download en_core_web_sm``).
     """
 

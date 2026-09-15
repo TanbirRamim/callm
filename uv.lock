@@ -214,7 +214,7 @@ wheels = [
 ]
 
 [[package]]
-name = "callm"
+name = "callm-toolkit"
 source = { editable = "." }
 
 [package.optional-dependencies]
