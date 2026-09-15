@@ -715,6 +715,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -731,6 +749,36 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#runnable-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runnable examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -929,6 +977,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#runnable-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runnable examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -970,6 +1037,43 @@ set the relevant API keys; the repository's <code>examples/</code> folder has ru
 <tr>
 <td><a href="data-extraction/">Data extraction</a></td>
 <td>Pydantic schemas, automatic repair, batch processing with a spend cap, cost reports</td>
+</tr>
+</tbody>
+</table>
+<h2 id="runnable-examples">Runnable examples<a class="headerlink" href="#runnable-examples" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Needs a key?</th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/TanbirRamim/callm/blob/main/examples/offline_demo.py"><code>examples/offline_demo.py</code></a></td>
+<td>no</td>
+<td>a guided tour: retry, cache hit, fallback, blocked call, flagged injection</td>
+</tr>
+<tr>
+<td><a href="https://github.com/TanbirRamim/callm/blob/main/examples/ticket_triage.py"><code>examples/ticket_triage.py</code></a></td>
+<td>yes</td>
+<td>a complete mini-project: support-ticket triage with validation, caching, PII masking and a cost report</td>
+</tr>
+<tr>
+<td><a href="https://github.com/TanbirRamim/callm/blob/main/examples/quickstart.py"><code>examples/quickstart.py</code></a></td>
+<td>yes</td>
+<td>the smallest useful program</td>
+</tr>
+<tr>
+<td><a href="https://github.com/TanbirRamim/callm/blob/main/examples/structured_output.py"><code>examples/structured_output.py</code></a></td>
+<td>yes</td>
+<td>schemas with automatic repair and a fallback provider</td>
+</tr>
+<tr>
+<td><a href="https://github.com/TanbirRamim/callm/blob/main/examples/async_budgets.py"><code>examples/async_budgets.py</code></a></td>
+<td>yes</td>
+<td>concurrent async calls under a shared session budget</td>
 </tr>
 </tbody>
 </table>
