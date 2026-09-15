@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://tanbirramim.github.io/callm/api-reference/">
+        <link rel="canonical" href="https://tanbirramim.github.io/callm/benchmarks/">
       
       
-        <link rel="prev" href="../benchmarks/">
+        <link rel="prev" href="../cookbook/data-extraction/">
       
       
-        <link rel="next" href="../faq/">
+        <link rel="next" href="../api-reference/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>API reference - callm</title>
+        <title>Benchmarks - callm</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#api-reference" class="md-skip">
+        <a href="#benchmarks" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API reference
+              Benchmarks
             
           </span>
         </div>
@@ -820,33 +820,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../benchmarks/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Benchmarks
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -866,7 +839,7 @@
   <span class="md-ellipsis">
     
   
-    API reference
+    Benchmarks
   
 
     
@@ -884,7 +857,7 @@
   <span class="md-ellipsis">
     
   
-    API reference
+    Benchmarks
   
 
     
@@ -910,10 +883,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#callm" class="md-nav__link">
+  <a href="#overhead-per-call" class="md-nav__link">
     <span class="md-ellipsis">
       
-        @callm
+        Overhead per call
       
     </span>
   </a>
@@ -921,10 +894,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shield" class="md-nav__link">
+  <a href="#cache-savings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        shield
+        Cache savings
       
     </span>
   </a>
@@ -932,10 +905,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#complete-acomplete" class="md-nav__link">
+  <a href="#reliability-under-provider-failures" class="md-nav__link">
     <span class="md-ellipsis">
       
-        complete / acomplete
+        Reliability under provider failures
       
     </span>
   </a>
@@ -943,165 +916,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-objects" class="md-nav__link">
+  <a href="#caveats" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuration objects
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configuration objects">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#retryconfig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        RetryConfig
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cacheconfig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CacheConfig
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#piiconfig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PIIConfig
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#injectionconfig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        InjectionConfig
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#budgets" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Budgets
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#results-and-records" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Results and records
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Results and records">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#llmresponse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        LLMResponse
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#callrecord" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CallRecord
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#target" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Target
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#settings-and-helpers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Settings and helpers
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#storage-callmstorage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Storage (callm.storage)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#errors" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Errors
+        Caveats
       
     </span>
   </a>
@@ -1112,6 +930,33 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1170,10 +1015,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#callm" class="md-nav__link">
+  <a href="#overhead-per-call" class="md-nav__link">
     <span class="md-ellipsis">
       
-        @callm
+        Overhead per call
       
     </span>
   </a>
@@ -1181,10 +1026,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shield" class="md-nav__link">
+  <a href="#cache-savings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        shield
+        Cache savings
       
     </span>
   </a>
@@ -1192,10 +1037,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#complete-acomplete" class="md-nav__link">
+  <a href="#reliability-under-provider-failures" class="md-nav__link">
     <span class="md-ellipsis">
       
-        complete / acomplete
+        Reliability under provider failures
       
     </span>
   </a>
@@ -1203,165 +1048,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-objects" class="md-nav__link">
+  <a href="#caveats" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuration objects
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configuration objects">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#retryconfig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        RetryConfig
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cacheconfig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CacheConfig
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#piiconfig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PIIConfig
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#injectionconfig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        InjectionConfig
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#budgets" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Budgets
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#results-and-records" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Results and records
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Results and records">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#llmresponse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        LLMResponse
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#callrecord" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CallRecord
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#target" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Target
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#settings-and-helpers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Settings and helpers
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#storage-callmstorage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Storage (callm.storage)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#errors" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Errors
+        Caveats
       
     </span>
   </a>
@@ -1388,226 +1078,134 @@
   
 
 
-<h1 id="api-reference">API reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
-<p>Everything below is importable from the top-level <code>callm</code> package unless noted.</p>
-<h2 id="callm"><code>@callm</code><a class="headerlink" href="#callm" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">callm</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="s2">"exact"</span> <span class="o">|</span> <span class="s2">"semantic"</span> <span class="o">|</span> <span class="n">CacheConfig</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">retry</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">RetryConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>       <span class="c1"># None -&gt; default_retries (2)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Target</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">fallback_on</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="ne">BaseException</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">max_cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>                        <span class="c1"># USD per call</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">budget</span><span class="p">:</span> <span class="n">Budget</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">block_pii</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="n">PIIConfig</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">detect_injection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="n">InjectionConfig</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">output_schema</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>                            <span class="c1"># any Pydantic-compatible type</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">validation_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>                              <span class="c1"># telemetry name</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>                <span class="c1"># telemetry labels</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">telemetry</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="p">)</span>
+<h1 id="benchmarks">Benchmarks<a class="headerlink" href="#benchmarks" title="Permanent link">&para;</a></h1>
+<p>All numbers come from <a href="https://github.com/TanbirRamim/callm/blob/main/benchmarks/run.py"><code>benchmarks/run.py</code></a>,
+which runs the real OpenAI SDK against an in-process fake server. Nothing touches the network,
+so the results isolate what callm itself does. Reproduce them with:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/TanbirRamim/callm<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>callm
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>sync
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>benchmarks/run.py
 </code></pre></div>
-<p>Usable as <code>@callm</code>, <code>@callm()</code> or <code>@callm(...)</code> on functions, methods and <code>async def</code> functions.
-Generator functions are rejected. Invalid options raise <code>ConfigurationError</code> at decoration time.
-The wrapped function exposes its resolved configuration as <code>fn.callm_config</code>.</p>
-<p><strong>Returns:</strong> whatever the function returns, or the validated <code>output_schema</code> instance.</p>
-<h2 id="shield"><code>shield</code><a class="headerlink" href="#shield" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">shield</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fallback_on</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>       <span class="n">block_pii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">detect_injection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validation_retries</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>       <span class="n">name</span><span class="o">=</span><span class="s2">"shield"</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">telemetry</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
-<p>Context manager (<code>with</code> / <code>async with</code>) applying the options to intercepted SDK calls in the
-block. Methods:</p>
+<p>Results below: callm 0.1.0, Python 3.12, macOS on Apple silicon.</p>
+<h2 id="overhead-per-call">Overhead per call<a class="headerlink" href="#overhead-per-call" title="Permanent link">&para;</a></h2>
+<p>The fake server answers instantly, so any difference from the plain SDK call is callm's own work
+(parsing the request, running the middleware, recording telemetry).</p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th style="text-align: right;">Median latency</th>
+<th style="text-align: right;">Added by callm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SDK call without callm</td>
+<td style="text-align: right;">0.328 ms</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>@callm()</code> defaults, in-memory telemetry</td>
+<td style="text-align: right;">0.372 ms</td>
+<td style="text-align: right;">+0.043 ms</td>
+</tr>
+<tr>
+<td><code>@callm()</code> defaults, SQLite telemetry (default storage)</td>
+<td style="text-align: right;">0.390 ms</td>
+<td style="text-align: right;">+0.062 ms</td>
+</tr>
+<tr>
+<td>+ <code>block_pii</code> + <code>detect_injection</code></td>
+<td style="text-align: right;">0.424 ms</td>
+<td style="text-align: right;">+0.095 ms</td>
+</tr>
+<tr>
+<td>+ <code>max_cost</code> + <code>budget</code></td>
+<td style="text-align: right;">0.428 ms</td>
+<td style="text-align: right;">+0.100 ms</td>
+</tr>
+</tbody>
+</table>
+<p>For comparison, a real LLM API call typically takes hundreds of milliseconds to several seconds,
+so callm's overhead is a fraction of a percent of end-to-end latency.</p>
+<h2 id="cache-savings">Cache savings<a class="headerlink" href="#cache-savings" title="Permanent link">&para;</a></h2>
+<p>Each call is priced as <code>gpt-4o-mini</code> with 850 input and 180 output tokens. Savings depend
+entirely on how often identical requests repeat, so two workloads are shown:</p>
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th style="text-align: right;">Requests</th>
+<th style="text-align: right;">Provider calls</th>
+<th style="text-align: right;">Cost without cache</th>
+<th style="text-align: right;">Cost with cache</th>
+<th style="text-align: right;">Saved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Support/FAQ traffic (Zipf over 500 questions)</td>
+<td style="text-align: right;">5,000</td>
+<td style="text-align: right;">461</td>
+<td style="text-align: right;">$1.18</td>
+<td style="text-align: right;">$0.11</td>
+<td style="text-align: right;">91%</td>
+</tr>
+<tr>
+<td>Mostly unique prompts (uniform over 100,000)</td>
+<td style="text-align: right;">5,000</td>
+<td style="text-align: right;">4,891</td>
+<td style="text-align: right;">$1.18</td>
+<td style="text-align: right;">$1.15</td>
+<td style="text-align: right;">2%</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li><code>complete(*, model, messages, provider=None, **kwargs) -&gt; LLMResponse</code></li>
-<li><code>async acomplete(*, model, messages, provider=None, **kwargs) -&gt; LLMResponse</code></li>
+<li>The first row models traffic where a few questions are asked constantly: support bots,
+  documentation assistants, classification of recurring inputs.</li>
+<li>The second row models prompts that rarely repeat, such as free-form chat with long history.
+  There the exact-match cache helps little; don't enable caching expecting savings there.</li>
+<li>Semantic caching (<code>cache="semantic"</code>) can raise hit rates on paraphrased questions at the risk of
+  returning an answer to a slightly different question. See <a href="../guides/caching/">Caching</a>.</li>
 </ul>
-<p><code>kwargs</code> accept the same options as <code>callm.complete</code> and override the shield's options.</p>
-<h2 id="complete-acomplete"><code>complete</code> / <code>acomplete</code><a class="headerlink" href="#complete-acomplete" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">complete</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">provider</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">top_p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>         <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">&lt;</span><span class="nb">all</span> <span class="nd">@callm</span> <span class="n">options</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">**</span><span class="n">provider_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMResponse</span>
-</code></pre></div>
+<h2 id="reliability-under-provider-failures">Reliability under provider failures<a class="headerlink" href="#reliability-under-provider-failures" title="Permanent link">&para;</a></h2>
+<p>Every request to the primary deployment fails with HTTP 503 with probability 20%, independently.
+The fallback target is a healthy deployment.</p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th style="text-align: right;">Successful requests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SDK call without callm</td>
+<td style="text-align: right;">79.9%</td>
+</tr>
+<tr>
+<td><code>@callm(retry=2)</code></td>
+<td style="text-align: right;">99.4%</td>
+</tr>
+<tr>
+<td><code>@callm(retry=2, fallback=["openai/gpt-4o-mini"])</code></td>
+<td style="text-align: right;">100.0%</td>
+</tr>
+</tbody>
+</table>
+<p>Three attempts each failing with probability 0.2 give an expected success rate of
+1 − 0.2³ = 99.2%, which matches the measurement. Real outages are often correlated (a provider is
+down for minutes rather than failing requests at random); that is the case fallback to another
+deployment or provider covers.</p>
+<h2 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>model</code>: <code>"provider/model"</code>, an inferable model id, or a <code>Target</code>.</li>
-<li><code>messages</code>: a string or a list of <code>{"role": ..., "content": ...}</code> dicts (or <code>Message</code>).</li>
-<li><code>provider_kwargs</code>: passed to the SDK unchanged.</li>
+<li>These are synthetic workloads designed to show mechanisms, not predictions for your traffic.
+  Measure with your own telemetry: <code>callm stats</code> reports cache hit rate and savings per function.</li>
+<li>Backoff sleeps are disabled in the failure benchmark; with real backoff, retried requests take
+  longer to succeed.</li>
+<li>Overhead was measured on one machine; absolute numbers vary, the order of magnitude does not.</li>
 </ul>
-<h2 id="configuration-objects">Configuration objects<a class="headerlink" href="#configuration-objects" title="Permanent link">&para;</a></h2>
-<h3 id="retryconfig"><code>RetryConfig</code><a class="headerlink" href="#retryconfig" title="Permanent link">&para;</a></h3>
-<p><code>max_retries=2, base_delay=0.5, max_delay=30.0, jitter=True,
-retry_on_status=frozenset({408, 409, 425, 429, 500, 502, 503, 504, 529}), retry_on_timeout=True,
-retry_on_connection_error=True, respect_retry_after=True, max_retry_after=60.0</code></p>
-<h3 id="cacheconfig"><code>CacheConfig</code><a class="headerlink" href="#cacheconfig" title="Permanent link">&para;</a></h3>
-<p><code>ttl=None, semantic=False, threshold=0.95, embedder=None, store=None, namespace="default",
-max_candidates=2000</code></p>
-<h3 id="piiconfig"><code>PIIConfig</code><a class="headerlink" href="#piiconfig" title="Permanent link">&para;</a></h3>
-<p><code>entities=("email", "phone", "ssn", "credit_card", "ip_address", "iban"), action="mask",
-ner=False, ner_model="en_core_web_sm", roles=("system", "user", "assistant", "tool")</code></p>
-<h3 id="injectionconfig"><code>InjectionConfig</code><a class="headerlink" href="#injectionconfig" title="Permanent link">&para;</a></h3>
-<p><code>threshold=0.5, action="flag", roles=("user", "tool"), classifier=None,
-classifier_label="INJECTION"</code></p>
-<h2 id="budgets">Budgets<a class="headerlink" href="#budgets" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>API</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Budget(limit, name=None)</code></td>
-<td>thread-safe USD limit; <code>.spent</code>, <code>.reserved</code>, <code>.remaining</code>, <code>.limit</code> (settable), <code>.add(cost)</code>, <code>.reset()</code>; usable with <code>with</code> / <code>async with</code></td>
-</tr>
-<tr>
-<td><code>budget(limit, name=None)</code></td>
-<td>create a <code>Budget</code> for a <code>with</code> block</td>
-</tr>
-<tr>
-<td><code>budget_for(key, limit=None)</code></td>
-<td>process-wide budget registered under <code>key</code></td>
-</tr>
-</tbody>
-</table>
-<h2 id="results-and-records">Results and records<a class="headerlink" href="#results-and-records" title="Permanent link">&para;</a></h2>
-<h3 id="llmresponse"><code>LLMResponse</code><a class="headerlink" href="#llmresponse" title="Permanent link">&para;</a></h3>
-<p><code>text, provider, model, usage: Usage, finish_reason, cost, latency_ms, cached, id, raw, parsed</code></p>
-<h3 id="usage"><code>Usage</code><a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
-<p><code>input_tokens</code> (uncached), <code>output_tokens</code>, <code>cache_read_tokens</code>, <code>cache_write_tokens</code>,
-<code>total_tokens</code></p>
-<h3 id="callrecord"><code>CallRecord</code><a class="headerlink" href="#callrecord" title="Permanent link">&para;</a></h3>
-<p>See <a href="../guides/telemetry/">Telemetry</a>. <code>callm.last_call()</code> returns the latest record in the
-current context.</p>
-<h3 id="target"><code>Target</code><a class="headerlink" href="#target" title="Permanent link">&para;</a></h3>
-<p><code>Target(provider, model)</code>, <code>.label</code> → <code>"provider/model"</code></p>
-<h2 id="settings-and-helpers">Settings and helpers<a class="headerlink" href="#settings-and-helpers" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>API</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>configure(**settings)</code></td>
-<td>change global settings (see <a href="../guides/configuration/">Configuration</a>)</td>
-</tr>
-<tr>
-<td><code>get_settings()</code> / <code>reset_settings()</code></td>
-<td>inspect / restore defaults</td>
-</tr>
-<tr>
-<td><code>stats(by="provider", since=None, function=None)</code></td>
-<td>aggregated telemetry rows</td>
-</tr>
-<tr>
-<td><code>clear_cache()</code></td>
-<td>delete all cached responses</td>
-</tr>
-<tr>
-<td><code>get_price(provider, model)</code> / <code>set_price(model, *, input, output, cache_read=None, cache_write=None, provider="*")</code></td>
-<td>prices in USD per 1M tokens</td>
-</tr>
-<tr>
-<td><code>register_provider(name, provider)</code></td>
-<td>add a provider adapter</td>
-</tr>
-<tr>
-<td><code>OpenAIProvider(name, *, base_url, api_key, api_key_env, max_tokens_param)</code></td>
-<td>adapter for OpenAI-compatible APIs</td>
-</tr>
-<tr>
-<td><code>redact_pii(text, entities=None, *, ner=False)</code></td>
-<td>mask PII in a string</td>
-</tr>
-<tr>
-<td><code>detect_injection(text)</code></td>
-<td>heuristic <code>InjectionResult(score, matches)</code></td>
-</tr>
-<tr>
-<td><code>HashingEmbedder</code>, <code>SentenceTransformerEmbedder</code>, <code>OpenAIEmbedder</code></td>
-<td>embedders for semantic caching</td>
-</tr>
-</tbody>
-</table>
-<h2 id="storage-callmstorage">Storage (<code>callm.storage</code>)<a class="headerlink" href="#storage-callmstorage" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Class</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>SQLiteStorage(path)</code></td>
-<td>cache + telemetry in one SQLite file (default backend)</td>
-</tr>
-<tr>
-<td><code>MemoryStorage()</code> / <code>MemoryCacheStore()</code> / <code>MemoryTelemetryStore()</code></td>
-<td>in-process</td>
-</tr>
-<tr>
-<td><code>RedisCacheStore(url, *, client=None, prefix="callm")</code></td>
-<td>shared cache (<code>callm.storage.redis</code>)</td>
-</tr>
-<tr>
-<td><code>CacheStore</code>, <code>TelemetryStore</code></td>
-<td>abstract base classes for custom backends</td>
-</tr>
-</tbody>
-</table>
-<h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Exception</th>
-<th>Raised when</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>CallmError</code></td>
-<td>base class of all callm errors</td>
-</tr>
-<tr>
-<td><code>ConfigurationError</code></td>
-<td>invalid options (also a <code>ValueError</code>)</td>
-</tr>
-<tr>
-<td><code>MissingDependencyError</code></td>
-<td>an optional package is needed (also an <code>ImportError</code>)</td>
-</tr>
-<tr>
-<td><code>BudgetExceeded</code> (<code>BudgetExceededError</code>)</td>
-<td><code>max_cost</code> or a budget would be exceeded — <code>.scope</code>, <code>.limit</code>, <code>.estimated</code>, <code>.spent</code></td>
-</tr>
-<tr>
-<td><code>PIIDetectedError</code></td>
-<td>PII found with <code>action="block"</code> — <code>.entities</code></td>
-</tr>
-<tr>
-<td><code>PromptInjectionError</code></td>
-<td>injection score over threshold with <code>action="block"</code> — <code>.score</code>, <code>.matches</code></td>
-</tr>
-<tr>
-<td><code>OutputValidationError</code></td>
-<td>output never matched the schema — <code>.errors</code>, <code>.raw_text</code>, <code>.attempts</code></td>
-</tr>
-<tr>
-<td><code>AllProvidersFailedError</code></td>
-<td>primary and all fallbacks failed — <code>.errors</code>, <code>.last_error</code></td>
-</tr>
-<tr>
-<td><code>ProviderNotAvailableError</code></td>
-<td>unknown provider or untranslatable request</td>
-</tr>
-</tbody>
-</table>
-<p>Provider SDK exceptions (for example <code>openai.RateLimitError</code>) propagate unchanged when no
-fallback is configured.</p>
 
 
 
@@ -1645,7 +1243,7 @@ fallback is configured.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../benchmarks/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Benchmarks">
+          <a href="../cookbook/data-extraction/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Data extraction">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1655,20 +1253,20 @@ fallback is configured.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Benchmarks
+                Data extraction
               </div>
             </div>
           </a>
         
         
           
-          <a href="../faq/" class="md-footer__link md-footer__link--next" aria-label="Next: FAQ &amp; limitations">
+          <a href="../api-reference/" class="md-footer__link md-footer__link--next" aria-label="Next: API reference">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                FAQ & limitations
+                API reference
               </div>
             </div>
             <div class="md-footer__button md-icon">
