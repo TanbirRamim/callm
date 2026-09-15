@@ -272,8 +272,10 @@ response = callm.complete("gemini/gemini-2.5-flash", "Summarize: ...", max_token
 response.text, response.usage.total_tokens, response.cost, response.raw
 ```
 
-More in the [cookbook](https://tanbirramim.github.io/callm/cookbook/): a support chatbot, RAG answers with citations and data
-extraction.
+Want a complete program to run? [`examples/ticket_triage.py`](examples/ticket_triage.py) triages
+support tickets with validation, caching, PII masking and a cost report in ~60 lines. More in the
+[cookbook](https://tanbirramim.github.io/callm/cookbook/): a support chatbot, RAG answers with
+citations and data extraction.
 
 ## How it works
 
