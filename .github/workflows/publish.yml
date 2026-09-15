@@ -1,0 +1,66 @@
+name: Publish
+
+# Publishes to PyPI with trusted publishing (no API tokens) when a GitHub release is
+# published. Configure the "pypi" environment and the trusted publisher on PyPI first:
+# https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "testpypi or pypi"
+        required: true
+        default: testpypi
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Check the tag matches the package version
+        if: github.event_name == 'release'
+        run: |
+          version=$(uv run --no-project python -c "import re;print(re.search(r'\"(.+)\"', open('src/callm/__about__.py').read()).group(1))")
+          test "v$version" = "${{ github.event.release.tag_name }}"
+      - run: uv sync --python 3.12
+      - run: uv run pytest -q
+      - run: uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  testpypi:
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  pypi:
+    if: github.event_name == 'release' || inputs.target == 'pypi'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
