@@ -8,9 +8,22 @@ limit, PII masking and a cost report.
     python ticket_triage.py
 
 Run it twice: the second run answers from the cache and costs nothing.
+
+Any OpenAI-compatible endpoint works; set the base URL and a model it serves::
+
+    # OpenRouter
+    export OPENAI_BASE_URL=https://openrouter.ai/api/v1
+    export OPENAI_API_KEY=sk-or-v1-...
+    export CALLM_EXAMPLE_MODEL=openai/gpt-4o-mini
+
+    # Ollama, running locally
+    export OPENAI_BASE_URL=http://localhost:11434/v1 OPENAI_API_KEY=ollama
+    export CALLM_EXAMPLE_MODEL=llama3.1
 """
 
 from __future__ import annotations
+
+import os
 
 import openai
 from pydantic import BaseModel, Field
@@ -18,6 +31,7 @@ from pydantic import BaseModel, Field
 import callm
 
 client = openai.OpenAI(max_retries=0)  # callm owns retries
+MODEL = os.environ.get("CALLM_EXAMPLE_MODEL", "gpt-4o-mini")
 
 TICKETS = [
     "Hi, I was charged twice for May. My email is dana@example.com, card ending 4242.",
@@ -45,7 +59,7 @@ class Triage(BaseModel):
 )
 def triage(ticket: str) -> Triage:
     return client.chat.completions.create(
-        model="gpt-4o-mini",
+        model=MODEL,
         max_tokens=300,
         messages=[
             {
@@ -63,6 +77,8 @@ def triage(ticket: str) -> Triage:
 
 
 def main() -> None:
+    print(f"Model: {MODEL}  ·  endpoint: {client.base_url}")
+
     for ticket in TICKETS:
         result = triage(ticket)
         record = callm.last_call()
