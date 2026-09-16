@@ -458,3 +458,53 @@ def test_to_plain_describes_types_and_callables():
     assert to_plain(Plain) == {"__type__": f"{Plain.__module__}.{Plain.__qualname__}"}
     assert "schema" not in to_plain(Broken)
     assert to_plain(len) == {"__callable__": "builtins.len"}
+
+
+def test_last_call_sees_calls_made_inside_asyncio_run(async_openai_client, openai_client):
+    import asyncio
+
+    @callm.callm(block_pii=True, name="async.ask")
+    async def ask_async():
+        return await async_openai_client.chat.completions.create(
+            model="gpt-4o-mini", messages=user("mail a@b.io")
+        )
+
+    @callm.callm(name="sync.ask")
+    def ask_sync():
+        return openai_client.chat.completions.create(model="gpt-4o-mini", messages=user("x"))
+
+    assert callm.last_call() is None
+    asyncio.run(ask_async())
+    record = callm.last_call()
+    assert record is not None
+    assert record.function == "async.ask"
+    assert record.pii_redactions == {"email": 1}
+
+    ask_sync()  # a newer call in this context wins again
+    assert callm.last_call().function == "sync.ask"
+
+
+def test_last_call_is_per_context_for_concurrent_tasks(async_openai_client):
+    import asyncio
+
+    async def main():
+        @callm.callm(name="first")
+        async def first():
+            await asyncio.sleep(0)
+            return await async_openai_client.chat.completions.create(
+                model="gpt-4o-mini", messages=user("1")
+            )
+
+        @callm.callm(name="second")
+        async def second():
+            return await async_openai_client.chat.completions.create(
+                model="gpt-4o-mini", messages=user("2")
+            )
+
+        async def run(fn, expected):
+            await fn()
+            assert callm.last_call().function == expected
+
+        await asyncio.gather(run(first, "first"), run(second, "second"))
+
+    asyncio.run(main())

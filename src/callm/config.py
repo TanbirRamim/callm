@@ -438,11 +438,14 @@ def configure(**options: Any) -> Settings:
 
 
 def reset_settings() -> None:
-    """Restore default settings (mainly useful in tests)."""
+    """Restore default settings and forget the last call (mainly useful in tests)."""
     global _settings
+    from callm.middleware.telemetry import reset_last_call
+
     with _settings_lock:
         _close_stores()
         _settings = Settings()
+    reset_last_call()
 
 
 def _close_stores() -> None:

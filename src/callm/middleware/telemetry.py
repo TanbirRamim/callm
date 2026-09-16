@@ -8,6 +8,7 @@ GenAI semantic conventions. Telemetry failures are logged and never break a call
 from __future__ import annotations
 
 import logging
+import threading
 import time
 from contextvars import ContextVar
 from typing import Any
@@ -19,11 +20,35 @@ from callm.types import CallRecord, LLMResponse
 logger = logging.getLogger("callm")
 
 _LAST_CALL: ContextVar[CallRecord | None] = ContextVar("callm_last_call", default=None)
+_LAST_RECORD: CallRecord | None = None
+_LAST_LOCK = threading.Lock()
 
 
 def last_call() -> CallRecord | None:
-    """The telemetry record of the most recent call made in the current context."""
-    return _LAST_CALL.get()
+    """The telemetry record of the most recent call.
+
+    Records are stored in a context variable, so a call made in the current context wins.
+    Calls made in a nested ``asyncio`` task (including inside ``asyncio.run(...)``) or in
+    another thread cannot write to this context, so the most recent record overall is used
+    when it is newer. For per-call data under concurrency, prefer the response object or an
+    ``on_call`` hook.
+    """
+    local = _LAST_CALL.get()
+    with _LAST_LOCK:
+        newest = _LAST_RECORD
+    if local is None:
+        return newest
+    if newest is None or newest.timestamp <= local.timestamp:
+        return local
+    return newest
+
+
+def reset_last_call() -> None:
+    """Forget the last recorded call (used by :func:`callm.reset_settings`)."""
+    global _LAST_RECORD
+    _LAST_CALL.set(None)
+    with _LAST_LOCK:
+        _LAST_RECORD = None
 
 
 def fill_from_response(record: CallRecord, response: LLMResponse) -> None:
@@ -44,7 +69,10 @@ def fill_from_response(record: CallRecord, response: LLMResponse) -> None:
 
 def emit(record: CallRecord, *, persist: bool = True, start_ns: int | None = None) -> None:
     """Publish a finished record to storage, hooks and OpenTelemetry."""
+    global _LAST_RECORD
     _LAST_CALL.set(record)
+    with _LAST_LOCK:
+        _LAST_RECORD = record
     settings = get_settings()
     if persist and settings.telemetry:
         try:
@@ -136,4 +164,4 @@ class TelemetryMiddleware:
         return response
 
 
-__all__ = ["TelemetryMiddleware", "emit", "fill_from_response", "last_call"]
+__all__ = ["TelemetryMiddleware", "emit", "fill_from_response", "last_call", "reset_last_call"]

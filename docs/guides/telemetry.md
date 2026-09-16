@@ -22,7 +22,10 @@ Records **never contain prompt or completion text**.
   `callm.configure(telemetry=False)`, `CALLM_TELEMETRY=0`, or `@callm(telemetry=False)`)
 - `on_call` hooks — `callm.configure(on_call=[send_to_metrics])`
 - OpenTelemetry — `callm.configure(otel=True)` with `pip install "callm-toolkit[otel]"`
-- `callm.last_call()` — the most recent record in the current context
+- `callm.last_call()` — the most recent record in the current context. Calls made inside a
+  nested `asyncio` task (including `asyncio.run(...)`) or another thread cannot write to your
+  context, so the newest record overall is returned instead. Under concurrency, prefer an
+  `on_call` hook or the response object.
 
 Telemetry failures are logged and never break a call.
 

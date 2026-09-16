@@ -6,8 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `callm.last_call()` returned nothing (or a stale record) for calls made inside
+  `asyncio.run(...)` or another thread; it now falls back to the most recent record overall.
+
 ### Added
 
+- A runnable ticket triage example that works with any OpenAI-compatible endpoint.
 - Reproducible offline benchmarks (`benchmarks/run.py`) and a benchmarks page in the docs.
 - Demo GIF, before/after example and a comparison with related tools in the README.
 
