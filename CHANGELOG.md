@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-16
+
 ### Fixed
 
 - `callm.last_call()` returned nothing (or a stale record) for calls made inside
@@ -16,6 +18,8 @@ All notable changes to this project are documented here. The format follows
 - A runnable ticket triage example that works with any OpenAI-compatible endpoint.
 - Reproducible offline benchmarks (`benchmarks/run.py`) and a benchmarks page in the docs.
 - Demo GIF, before/after example and a comparison with related tools in the README.
+- Nested scopes, SDK `NOT_GIVEN` sentinels and structured-field PII masking, all covered by
+  regression tests (first reported during pre-release review).
 
 ## [0.1.0] - 2026-09-15
 
@@ -49,5 +53,6 @@ Initial release.
   budgets) from enclosing decorators and shields apply to inner calls.
 - `callm` CLI: `stats`, `calls`, `cache`, `pricing`, `telemetry`, `info`.
 
-[Unreleased]: https://github.com/TanbirRamim/callm/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/TanbirRamim/callm/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/TanbirRamim/callm/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/TanbirRamim/callm/releases/tag/v0.1.0
