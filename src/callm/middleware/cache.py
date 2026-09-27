@@ -113,6 +113,9 @@ def cache_keys(
         "extra": extra,
         "schema": schema_fingerprint(schema),
     }
+    endpoint = request.native_extra.get("__endpoint__")
+    if endpoint:  # only non-default endpoints, so existing cache keys stay valid
+        base["endpoint"] = endpoint
     exact = _digest({**base, "messages": _message_material(request, mask_last_user=False)})
     last = request.messages[-1] if request.messages else None
     if last is None or last.role != "user" or not last.is_text_only:

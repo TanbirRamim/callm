@@ -123,6 +123,39 @@ def _is_raw_response_call(kwargs: dict[str, Any]) -> bool:
         return False
 
 
+_DEFAULT_ENDPOINTS = frozenset(
+    {
+        "https://api.openai.com/v1",
+        "https://api.anthropic.com",
+        "https://generativelanguage.googleapis.com",
+    }
+)
+
+
+def client_endpoint(resource: Any) -> str | None:
+    """Base URL of the SDK client behind ``resource``, or None for the provider default.
+
+    Part of the cache key, so an Azure, vLLM, Ollama or staging client never gets answers
+    cached from another server that happens to use the same model name.
+    """
+    try:
+        client = getattr(resource, "_client", None)  # openai, anthropic
+        url = getattr(client, "base_url", None)
+        if url is None:  # google-genai
+            api_client = getattr(resource, "_api_client", None)
+            url = getattr(getattr(api_client, "_http_options", None), "base_url", None)
+            if getattr(api_client, "vertexai", False):
+                project = getattr(api_client, "project", None)
+                location = getattr(api_client, "location", None)
+                return f"vertexai:{project}:{location}:{url or ''}"
+    except Exception:
+        return None
+    if url is None:
+        return None
+    endpoint = str(url).rstrip("/")
+    return None if endpoint in _DEFAULT_ENDPOINTS else endpoint
+
+
 def _prepare(
     ctx: ExecutionContext,
     target: PatchTarget,
@@ -130,9 +163,12 @@ def _prepare(
     mode: str,
     call_sync: Callable[[dict[str, Any]], Any] | None,
     call_async: Callable[[dict[str, Any]], Awaitable[Any]] | None,
+    endpoint: str | None = None,
 ) -> CallState | None:
     try:
         request = get_provider(target.provider).parse_native_request(clean_kwargs(kwargs))
+        if endpoint:
+            request.native_extra["__endpoint__"] = endpoint
     except Exception as exc:
         if ctx.config.pii is not None or ctx.config.injection is not None:
             raise  # never send a request we could not inspect when security is enabled
@@ -170,7 +206,15 @@ def _make_sync_wrapper(target: PatchTarget, original: Callable[..., Any]) -> Cal
         ctx = ACTIVE.get()
         if ctx is None or BYPASS.get() or args or _is_raw_response_call(kwargs):
             return original(self, *args, **kwargs)
-        state = _prepare(ctx, target, kwargs, "sync", lambda kw: original(self, **kw), None)
+        state = _prepare(
+            ctx,
+            target,
+            kwargs,
+            "sync",
+            lambda kw: original(self, **kw),
+            None,
+            client_endpoint(self),
+        )
         if state is None:
             return original(self, *args, **kwargs)
         response = run_sync(ctx.handler(state))
@@ -190,7 +234,7 @@ def _make_async_wrapper(target: PatchTarget, original: Callable[..., Any]) -> Ca
         async def call_async(kw: dict[str, Any]) -> Any:
             return await original(self, **kw)
 
-        state = _prepare(ctx, target, kwargs, "async", None, call_async)
+        state = _prepare(ctx, target, kwargs, "async", None, call_async, client_endpoint(self))
         if state is None:
             return await original(self, *args, **kwargs)
         response = await run_async(ctx.handler(state))
