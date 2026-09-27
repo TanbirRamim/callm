@@ -28,6 +28,8 @@ All notable changes to this project are documented here. The format follows
   client never gets answers cached from another server with the same model name.
 - Rewriting a cache entry (concurrent misses on one prompt) reset its hit count.
 - `examples/offline_demo.py` failed on openai < 3 / anthropic < 1 (`No module named httpx2`).
+- PII detection: non-ASCII emails, lowercase IBANs and IPv6 addresses are now masked, and SSH
+  remotes such as `git@github.com:org/repo.git` are no longer masked as email addresses.
 
 ### Documentation
 
