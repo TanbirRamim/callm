@@ -508,3 +508,31 @@ def test_last_call_is_per_context_for_concurrent_tasks(async_openai_client):
         await asyncio.gather(run(first, "first"), run(second, "second"))
 
     asyncio.run(main())
+
+
+def test_unintercepted_sdk_methods_warn_inside_callm(openai_client, openai_server, caplog):
+    import logging
+
+    if not hasattr(openai_client, "responses"):
+        pytest.skip("this openai version has no Responses API")
+    from callm import interception
+
+    interception._warned_methods.clear()
+
+    @callm.callm(block_pii=True, max_cost=1.0)
+    def ask():
+        return openai_client.responses.create(model="gpt-4o-mini", input="mail a@b.co")
+
+    with caplog.at_level(logging.WARNING, logger="callm"):
+        ask()
+        ask()
+    warnings = [r.getMessage() for r in caplog.records if "not intercepted" in r.getMessage()]
+    assert len(warnings) == 1  # once per method, not per call
+    assert "responses.create" in warnings[0]
+    assert "PII masking" in warnings[0] and "budgets" in warnings[0]
+
+    caplog.clear()
+    with caplog.at_level(logging.WARNING, logger="callm"):
+        interception._warned_methods.clear()
+        openai_client.responses.create(model="gpt-4o-mini", input="hi")  # outside @callm
+    assert not [r for r in caplog.records if "not intercepted" in r.getMessage()]

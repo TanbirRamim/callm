@@ -15,9 +15,12 @@ request it could not inspect.
 
 ## Which calls are not intercepted?
 
-- SDK helpers that bypass `create` / `generate_content` internally (for example
-  `client.messages.stream(...)`, `client.beta.chat.completions.parse(...)`, the OpenAI Responses
-  API). Use `callm.complete(...)` or call `create` directly.
+- SDK helpers that bypass `create` / `generate_content` internally: the OpenAI Responses API
+  (`client.responses.create/parse/stream`), `client.chat.completions.parse/stream` (and the
+  older `client.beta.chat.completions.parse/stream`) and Anthropic's `client.messages.stream(...)`.
+  Inside a callm function these log a one-time warning naming the protections that do not
+  apply (PII masking, budgets, caching...), so this never happens silently. Use `create` (or
+  `callm.complete(...)`) for now; intercepting these helpers is planned.
 - `with_raw_response` calls (intentionally passed through).
 - Calls in threads started without copying the context.
 - Clients callm has no adapter for. Their responses are still recorded in telemetry when the

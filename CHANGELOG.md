@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Inside a callm function, SDK helpers callm does not intercept yet (`responses.create/parse/stream`,
+  `chat.completions.parse/stream`, `beta.chat.completions.parse/stream`, Anthropic
+  `messages.stream`) now log a one-time warning naming the protections that do not apply,
+  instead of silently skipping PII masking, budgets and telemetry.
+
 ## [0.1.2] - 2026-09-27
 
 ### Fixed
