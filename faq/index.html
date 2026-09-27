@@ -1220,9 +1220,12 @@ warning — unless PII or injection protection is enabled, in which case callm r
 request it could not inspect.</p>
 <h2 id="which-calls-are-not-intercepted">Which calls are not intercepted?<a class="headerlink" href="#which-calls-are-not-intercepted" title="Permanent link">&para;</a></h2>
 <ul>
-<li>SDK helpers that bypass <code>create</code> / <code>generate_content</code> internally (for example
-  <code>client.messages.stream(...)</code>, <code>client.beta.chat.completions.parse(...)</code>, the OpenAI Responses
-  API). Use <code>callm.complete(...)</code> or call <code>create</code> directly.</li>
+<li>SDK helpers that bypass <code>create</code> / <code>generate_content</code> internally: the OpenAI Responses API
+  (<code>client.responses.create/parse/stream</code>), <code>client.chat.completions.parse/stream</code> (and the
+  older <code>client.beta.chat.completions.parse/stream</code>) and Anthropic's <code>client.messages.stream(...)</code>.
+  Inside a callm function these log a one-time warning naming the protections that do not
+  apply (PII masking, budgets, caching...), so this never happens silently. Use <code>create</code> (or
+  <code>callm.complete(...)</code>) for now; intercepting these helpers is planned.</li>
 <li><code>with_raw_response</code> calls (intentionally passed through).</li>
 <li>Calls in threads started without copying the context.</li>
 <li>Clients callm has no adapter for. Their responses are still recorded in telemetry when the
