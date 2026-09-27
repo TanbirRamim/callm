@@ -196,3 +196,52 @@ def test_errors_fall_back_to_the_whole_text_when_nothing_is_valid_json():
     with pytest.raises(ValidationFailure) as info:
         validate_text("Sorry, I can't help with that.", Ticket)
     assert info.value.errors and "(root)" in info.value.errors[0]
+
+
+class _Invoice(BaseModel):
+    vendor: str
+    total: float
+
+
+def test_every_validation_attempt_is_counted_in_telemetry(openai_client, openai_server):
+    callm.set_price("gpt-4o-mini", input=1.0, output=1.0)  # $1 per million tokens
+    openai_server.queue(
+        openai_body("not json", model="gpt-4o-mini", prompt_tokens=1000, completion_tokens=1000),
+        openai_body(
+            '{"vendor": "A"}', model="gpt-4o-mini", prompt_tokens=1000, completion_tokens=1000
+        ),
+        openai_body(
+            '{"vendor": "A", "total": 1}',
+            model="gpt-4o-mini",
+            prompt_tokens=1000,
+            completion_tokens=1000,
+        ),
+    )
+
+    @callm.callm(output_schema=_Invoice, retry=False)
+    def extract():
+        return openai_client.chat.completions.create(model="gpt-4o-mini", messages=user("extract"))
+
+    extract()
+    record = callm.last_call()
+    assert openai_server.count == 3
+    assert (record.input_tokens, record.output_tokens) == (3000, 3000)
+    assert record.cost_usd == pytest.approx(0.006)
+
+
+def test_failed_validation_still_records_what_was_spent(openai_client, openai_server):
+    callm.set_price("gpt-4o-mini", input=1.0, output=1.0)
+    openai_server.default = lambda *a, **k: openai_body(
+        "nope", model="gpt-4o-mini", prompt_tokens=1000, completion_tokens=1000
+    )
+
+    @callm.callm(output_schema=_Invoice, validation_retries=1, retry=False)
+    def extract():
+        return openai_client.chat.completions.create(model="gpt-4o-mini", messages=user("extract"))
+
+    with pytest.raises(OutputValidationError):
+        extract()
+    record = callm.last_call()
+    assert openai_server.count == 2
+    assert (record.input_tokens, record.output_tokens) == (2000, 2000)
+    assert record.cost_usd == pytest.approx(0.004)
