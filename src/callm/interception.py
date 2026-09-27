@@ -25,6 +25,7 @@ import importlib.machinery
 import logging
 import sys
 import threading
+import weakref
 from collections.abc import Awaitable, Callable
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -123,6 +124,79 @@ def _is_raw_response_call(kwargs: dict[str, Any]) -> bool:
         return False
 
 
+_DEFAULT_ENDPOINTS = frozenset(
+    {
+        "https://api.openai.com/v1",
+        "https://api.anthropic.com",
+        "https://generativelanguage.googleapis.com",
+    }
+)
+
+
+def client_endpoint(resource: Any) -> str | None:
+    """Base URL of the SDK client behind ``resource``, or None for the provider default.
+
+    Part of the cache key, so an Azure, vLLM, Ollama or staging client never gets answers
+    cached from another server that happens to use the same model name.
+    """
+    try:
+        client = getattr(resource, "_client", None)  # openai, anthropic
+        url = getattr(client, "base_url", None)
+        if url is None:  # google-genai
+            api_client = getattr(resource, "_api_client", None)
+            url = getattr(getattr(api_client, "_http_options", None), "base_url", None)
+            if getattr(api_client, "vertexai", False):
+                project = getattr(api_client, "project", None)
+                location = getattr(api_client, "location", None)
+                return f"vertexai:{project}:{location}:{url or ''}"
+    except Exception:
+        return None
+    if url is None:
+        return None
+    endpoint = str(url).rstrip("/")
+    return None if endpoint in _DEFAULT_ENDPOINTS else endpoint
+
+
+# Where each patched resource lives on its SDK client, to rebuild it on a client copy.
+_RESOURCE_PATHS: dict[str, tuple[str, ...]] = {
+    "openai": ("chat", "completions"),
+    "anthropic": ("messages",),
+}
+_no_retry_resources: weakref.WeakKeyDictionary[Any, Any] = weakref.WeakKeyDictionary()
+_no_retry_lock = threading.Lock()
+
+
+def _without_sdk_retries(resource: Any, target: PatchTarget, config: CallConfig) -> Any:
+    """The same resource on a copy of its client with the SDK's own retries switched off.
+
+    The OpenAI and Anthropic SDKs retry twice by default. When callm retries or falls
+    back itself, those hidden retries would multiply its attempts (3 x 3 = 9 requests)
+    and delay fallbacks, so callm takes over. Without callm retries or fallback, the
+    SDK keeps its behaviour.
+    """
+    if config.retry.max_retries == 0 and not config.fallback:
+        return resource
+    path = _RESOURCE_PATHS.get(target.provider)
+    client = getattr(resource, "_client", None)
+    if path is None or client is None or getattr(client, "max_retries", 0) == 0:
+        return resource
+    with _no_retry_lock:
+        cached = _no_retry_resources.get(resource)
+        if cached is not None:
+            return cached
+        try:
+            rebuilt: Any = client.with_options(max_retries=0)
+            for attribute in path:
+                rebuilt = getattr(rebuilt, attribute)
+        except Exception:
+            logger.debug("callm: could not disable SDK retries", exc_info=True)
+            return resource
+        if type(rebuilt) is not type(resource):
+            return resource
+        _no_retry_resources[resource] = rebuilt
+        return rebuilt
+
+
 def _prepare(
     ctx: ExecutionContext,
     target: PatchTarget,
@@ -130,9 +204,12 @@ def _prepare(
     mode: str,
     call_sync: Callable[[dict[str, Any]], Any] | None,
     call_async: Callable[[dict[str, Any]], Awaitable[Any]] | None,
+    endpoint: str | None = None,
 ) -> CallState | None:
     try:
         request = get_provider(target.provider).parse_native_request(clean_kwargs(kwargs))
+        if endpoint:
+            request.native_extra["__endpoint__"] = endpoint
     except Exception as exc:
         if ctx.config.pii is not None or ctx.config.injection is not None:
             raise  # never send a request we could not inspect when security is enabled
@@ -170,7 +247,16 @@ def _make_sync_wrapper(target: PatchTarget, original: Callable[..., Any]) -> Cal
         ctx = ACTIVE.get()
         if ctx is None or BYPASS.get() or args or _is_raw_response_call(kwargs):
             return original(self, *args, **kwargs)
-        state = _prepare(ctx, target, kwargs, "sync", lambda kw: original(self, **kw), None)
+        sdk = _without_sdk_retries(self, target, ctx.config)
+        state = _prepare(
+            ctx,
+            target,
+            kwargs,
+            "sync",
+            lambda kw: original(sdk, **kw),
+            None,
+            client_endpoint(self),
+        )
         if state is None:
             return original(self, *args, **kwargs)
         response = run_sync(ctx.handler(state))
@@ -187,10 +273,12 @@ def _make_async_wrapper(target: PatchTarget, original: Callable[..., Any]) -> Ca
         if ctx is None or BYPASS.get() or args or _is_raw_response_call(kwargs):
             return await original(self, *args, **kwargs)
 
-        async def call_async(kw: dict[str, Any]) -> Any:
-            return await original(self, **kw)
+        sdk = _without_sdk_retries(self, target, ctx.config)
 
-        state = _prepare(ctx, target, kwargs, "async", None, call_async)
+        async def call_async(kw: dict[str, Any]) -> Any:
+            return await original(sdk, **kw)
+
+        state = _prepare(ctx, target, kwargs, "async", None, call_async, client_endpoint(self))
         if state is None:
             return await original(self, *args, **kwargs)
         response = await run_async(ctx.handler(state))

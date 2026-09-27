@@ -5,7 +5,15 @@ budgets, PII redaction, prompt-injection detection, structured output validation
 in one decorator, on top of the SDKs you already use.
 
 ```python
+import openai
+from pydantic import BaseModel
 from callm import callm
+
+class MyResponse(BaseModel):
+    title: str
+    bullets: list[str]
+
+client = openai.OpenAI()
 
 @callm(
     cache=True,                          # response cache (SQLite by default)
@@ -17,7 +25,7 @@ from callm import callm
     output_schema=MyResponse,            # Pydantic validation + auto-retry
 )
 def summarize(text: str) -> MyResponse:
-    return openai.chat.completions.create(
+    return client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": text}],
     )

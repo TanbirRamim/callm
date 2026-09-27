@@ -207,6 +207,7 @@ class AnthropicProvider(Provider):
             output_tokens=int(attr(usage_obj, "output_tokens", 0) or 0),
             cache_read_tokens=int(attr(usage_obj, "cache_read_input_tokens", 0) or 0),
             cache_write_tokens=int(attr(usage_obj, "cache_creation_input_tokens", 0) or 0),
+            reported=usage_obj is not None,
         )
         return LLMResponse(
             text="".join(texts),

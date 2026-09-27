@@ -244,6 +244,9 @@ class Usage:
     output_tokens: int = 0
     cache_read_tokens: int = 0
     cache_write_tokens: int = 0
+    #: False when the provider's response carried no usage at all (some OpenAI-compatible
+    #: servers and proxies omit it). The cost is then unknown rather than zero.
+    reported: bool = True
 
     @property
     def total_tokens(self) -> int:
@@ -255,7 +258,12 @@ class Usage:
         )
 
     def to_dict(self) -> dict[str, int]:
-        return dataclasses.asdict(self)
+        return {
+            "input_tokens": self.input_tokens,
+            "output_tokens": self.output_tokens,
+            "cache_read_tokens": self.cache_read_tokens,
+            "cache_write_tokens": self.cache_write_tokens,
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any] | None) -> Usage:

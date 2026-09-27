@@ -204,3 +204,25 @@ def test_clear_cache(openai_client, openai_server):
     assert callm.clear_cache() == 1
     ask("x")
     assert openai_server.count == 2
+
+
+def test_exact_cache_is_separate_per_endpoint(openai_client, openai_server):
+    openai = pytest.importorskip("openai")
+    from conftest import httpx2
+
+    local_client = openai.OpenAI(
+        api_key="sk-test",
+        base_url="http://localhost:8000/v1",
+        max_retries=0,
+        http_client=httpx2.Client(transport=httpx2.MockTransport(openai_server.handler)),
+    )
+
+    @callm.callm(cache=True, retry=False)
+    def ask(client):
+        return client.chat.completions.create(model="gpt-4o-mini", messages=user("same prompt"))
+
+    ask(openai_client)
+    ask(local_client)  # a different server must not be answered from the first one's cache
+    assert openai_server.count == 2
+    ask(local_client)
+    assert openai_server.count == 2  # but it does get its own cache

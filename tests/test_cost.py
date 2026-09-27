@@ -130,7 +130,9 @@ def test_estimates_use_max_tokens_when_set():
     request = build_request("gpt-4o", "x" * 350, max_tokens=1000)
     cost, input_tokens, output_tokens = pricing.estimate_cost(request, assumed_output_tokens=10)
     assert output_tokens == 1000
-    assert input_tokens >= 100
+    # The count depends on whether tiktoken is installed, so compare with the estimator itself.
+    assert input_tokens == pricing.estimate_input_tokens(request)
+    assert input_tokens > 4  # more than the per-message framing alone
     assert cost == pytest.approx((input_tokens * 2.5 + 1000 * 10) / 1_000_000)
     _, _, assumed = pricing.estimate_cost(build_request("gpt-4o", "x"), assumed_output_tokens=77)
     assert assumed == 77
@@ -275,3 +277,75 @@ async def test_async_budget_scope(async_openai_client, openai_server):
             await ask()  # the estimate alone exceeds the limit
     assert scope.spent == 0
     assert openai_server.count == 0
+
+
+def test_tool_blocks_are_not_estimated_as_images():
+    from callm.providers.registry import get_provider
+
+    messages = [{"role": "user", "content": "weather?"}]
+    for i in range(10):
+        messages.append(
+            {
+                "role": "assistant",
+                "content": [{"type": "tool_use", "id": f"t{i}", "name": "w", "input": {}}],
+            }
+        )
+        messages.append(
+            {
+                "role": "user",
+                "content": [{"type": "tool_result", "tool_use_id": f"t{i}", "content": "sunny"}],
+            }
+        )
+    request = get_provider("anthropic").parse_native_request(
+        {"model": "claude-sonnet-5", "max_tokens": 100, "messages": messages}
+    )
+    assert pricing.estimate_input_tokens(request) < 1_000
+
+
+def test_images_still_use_the_image_estimate():
+    from callm.providers.registry import get_provider
+
+    request = get_provider("openai").parse_native_request(
+        {
+            "model": "gpt-4o",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "what is this?"},
+                        {"type": "image_url", "image_url": {"url": "https://example.com/cat.png"}},
+                    ],
+                }
+            ],
+        }
+    )
+    assert pricing.estimate_input_tokens(request) >= 1_500
+
+
+def test_missing_usage_is_charged_at_the_estimate_not_zero(openai_client, openai_server):
+    def body_without_usage(*args, **kwargs):
+        body = openai_body(*args, **kwargs)
+        body.pop("usage")
+        return body
+
+    openai_server.default = body_without_usage
+    callm.set_price("gpt-4o-mini", input=1_000_000, output=0)  # $1 per input token
+    budget = Budget(40.0)
+
+    @callm.callm(budget=budget, retry=False)
+    def ask():
+        return openai_client.chat.completions.create(
+            model="gpt-4o-mini", max_tokens=1, messages=user("hi")
+        )
+
+    ask()
+    assert budget.spent > 0  # the pre-call estimate, since the real cost is unknown
+    refused = False
+    for _ in range(10):
+        try:
+            ask()
+        except BudgetExceeded:
+            refused = True
+            break
+    assert refused  # before the fix every call was free and the budget never filled
+    assert openai_server.count < 10

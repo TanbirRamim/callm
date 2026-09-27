@@ -185,9 +185,14 @@ class SQLiteStorage(CacheStore, TelemetryStore):
     def set(self, entry: CacheEntry) -> None:
         with self._db() as db:
             db.execute(
-                "INSERT OR REPLACE INTO cache"
+                "INSERT INTO cache"
                 " (key, grp, response, embedding, created_at, expires_at, hits)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?)",
+                " VALUES (?, ?, ?, ?, ?, ?, ?)"
+                # Rewriting a key (concurrent misses on one prompt) keeps its hit count.
+                " ON CONFLICT(key) DO UPDATE SET grp = excluded.grp,"
+                " response = excluded.response, embedding = excluded.embedding,"
+                " created_at = excluded.created_at, expires_at = excluded.expires_at,"
+                " hits = MAX(cache.hits, excluded.hits)",
                 (
                     entry.key,
                     entry.group,

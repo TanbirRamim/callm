@@ -58,13 +58,12 @@ RetryConfig(
 
 ## SDK built-in retries
 
-The OpenAI and Anthropic SDKs retry twice on their own by default. Those retries happen inside
-a single callm attempt. For predictable behaviour and accurate retry counts in telemetry, create
-clients with `max_retries=0` and let callm handle retries:
+The OpenAI and Anthropic SDKs retry twice on their own by default. When callm retries or falls
+back, it calls the SDK through a copy of your client with `max_retries=0`, so the two never
+multiply (without this, `retry=2` could send up to nine requests on a persistent 429). Your
+client object itself is not changed.
 
-```python
-client = openai.OpenAI(max_retries=0)
-```
+With `retry=False` and no fallback, callm leaves the SDK's own retries in place.
 
 ## Functions without an intercepted call
 

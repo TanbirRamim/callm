@@ -26,12 +26,20 @@ you already use. No proxy. No database server. Zero required dependencies.
 ---
 
 ```python
+import openai
+from pydantic import BaseModel
 from callm import callm
+
+class Summary(BaseModel):
+    title: str
+    bullets: list[str]
+
+client = openai.OpenAI()
 
 @callm(cache=True, retry=3, fallback=["anthropic/claude-sonnet-5"], max_cost=0.25,
        block_pii=True, detect_injection=True, output_schema=Summary)
 def summarize(text: str) -> Summary:
-    return openai.chat.completions.create(
+    return client.chat.completions.create(
         model="gpt-4o", messages=[{"role": "user", "content": text}]
     )
 ```
@@ -126,7 +134,7 @@ from callm import callm
 
 @callm(cache=True, retry=3, block_pii=True,
        output_schema=Summary)
-def summarize(text: str):
+def summarize(text: str) -> Summary:
     return client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": text}],
@@ -134,7 +142,7 @@ def summarize(text: str):
 ```
 
 Plus what the hand-written version lacks:
-retry-after headers, phone/card/SSN/IBAN
+rate-limit reset headers and Gemini RetryInfo, phone/card/SSN/IBAN
 masking, persistent cache, provider fallback,
 budgets, injection detection, async support,
 telemetry and `callm stats`.
@@ -143,6 +151,24 @@ telemetry and `callm stats`.
 </table>
 
 ## Quickstart
+
+### Try it without an API key
+
+`examples/offline_demo.py` runs the real OpenAI and Anthropic SDKs against a scripted fake
+server and walks through a rate-limit retry, PII masking, schema validation, a cache hit, a
+fallback to Claude during an outage, a blocked expensive call and a flagged injection:
+
+```bash
+pip install "callm-toolkit[openai,anthropic,validation]"
+curl -O https://raw.githubusercontent.com/TanbirRamim/callm/main/examples/offline_demo.py
+export CALLM_HOME=/tmp/callm-demo      # keep demo data out of ~/.callm
+python offline_demo.py
+callm stats
+```
+
+(If you cloned the repository, run `python examples/offline_demo.py` instead.)
+
+### With your API key
 
 ```bash
 pip install "callm-toolkit[openai,validation]"   # or callm-toolkit[all]
@@ -172,22 +198,6 @@ Provider   Calls   Tokens    Cost   Cache Hits   Saved   Errors   Latency
 ──────────────────────────────────────────────────────────────────────────
 openai         1       31   $0.0000     0 (0%)   $0.00        0     412ms
 ```
-
-### Try it without an API key
-
-`examples/offline_demo.py` runs the real OpenAI and Anthropic SDKs against a scripted fake
-server and walks through a rate-limit retry, PII masking, schema validation, a cache hit, a
-fallback to Claude during an outage, a blocked expensive call and a flagged injection:
-
-```bash
-pip install "callm-toolkit[openai,anthropic,validation]"
-curl -O https://raw.githubusercontent.com/TanbirRamim/callm/main/examples/offline_demo.py
-export CALLM_HOME=/tmp/callm-demo      # keep demo data out of ~/.callm
-python offline_demo.py
-callm stats
-```
-
-(If you cloned the repository, run `python examples/offline_demo.py` instead.)
 
 ## Features
 
@@ -272,7 +282,7 @@ response = callm.complete("gemini/gemini-2.5-flash", "Summarize: ...", max_token
 response.text, response.usage.total_tokens, response.cost, response.raw
 ```
 
-Want a complete program to run? [`examples/ticket_triage.py`](examples/ticket_triage.py) triages
+Want a complete program to run? [`examples/ticket_triage.py`](https://github.com/TanbirRamim/callm/blob/main/examples/ticket_triage.py) triages
 support tickets with validation, caching, PII masking and a cost report in ~60 lines. More in the
 [cookbook](https://tanbirramim.github.io/callm/cookbook/): a support chatbot, RAG answers with
 citations and data extraction.

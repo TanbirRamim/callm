@@ -23,12 +23,12 @@ placeholder within a request, so the model can still reason about it:
 
 | Entity | Detection |
 |---|---|
-| `email` | RFC-style address pattern |
+| `email` | RFC-style address pattern, including non-ASCII addresses (`müller@beispiel.de`); SSH remotes such as `git@github.com:org/repo.git` are left alone |
 | `phone` | International numbers written with `+` (8–15 digits) and North American `(415) 555-0100` / `415-555-0100` / `415.555.0100` formats |
-| `ssn` | US SSN format, excluding invalid ranges |
+| `ssn` | US SSN format with dashes (`123-45-6789`), excluding invalid ranges; bare 9-digit numbers are too ambiguous and are not masked |
 | `credit_card` | 13–19 digits, **Luhn-validated**, with a real issuer prefix and card-style grouping |
-| `ip_address` | IPv4 with octet validation (not after `version`, `v`, `build`...) |
-| `iban` | IBAN format, **mod-97 checksum-validated** |
+| `ip_address` | IPv4 with octet validation (not after `version`, `v`, `build`...), and IPv6 validated with `ipaddress`. A dotted version written without such a keyword ("Python 3.12.1.2") looks exactly like an IPv4 address and is masked |
+| `iban` | IBAN format in upper or lower case, **mod-97 checksum-validated** |
 | `person` | spaCy `PERSON` entities (optional) |
 
 ```python

@@ -116,13 +116,29 @@ def validate_text(text: str, schema: Any) -> Any:
     adapter = type_adapter(schema)
     if schema is str:
         return text
-    last_errors: list[str] = ["the response was empty"]
+    # Report the errors of the first candidate that is valid JSON: that is the value the
+    # model meant to send, so its errors are the useful ones (and the ones a repair
+    # prompt should mention). A smaller substring tried later, such as a nested list,
+    # would otherwise hide them. If nothing parses, report the whole-text errors.
+    first_errors: list[str] | None = None
+    json_errors: list[str] | None = None
     for candidate in candidate_json(text):
         try:
             return adapter.validate_json(candidate)
         except pydantic.ValidationError as exc:
-            last_errors = _format_errors(exc)
-    raise ValidationFailure(last_errors, text)
+            errors = _format_errors(exc)
+            if first_errors is None:
+                first_errors = errors
+            if json_errors is None and not _is_json_syntax_error(exc):
+                json_errors = errors
+    raise ValidationFailure(json_errors or first_errors or ["the response was empty"], text)
+
+
+def _is_json_syntax_error(exc: Any) -> bool:
+    errors = getattr(exc, "errors", None)
+    if not callable(errors):
+        return False
+    return any(error.get("type") == "json_invalid" for error in errors())
 
 
 def validate_value(value: Any, schema: Any) -> Any:

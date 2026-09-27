@@ -6,6 +6,37 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The SDK's own retries no longer multiply callm's. With a default OpenAI or Anthropic client,
+  `@callm(retry=2)` could send nine requests on a persistent 429/5xx and wait on hidden
+  backoff before a fallback. When callm retries or falls back it now calls the SDK with
+  `max_retries=0` (on a copy; your client is unchanged).
+- A response without a `usage` field was recorded as free, so budgets and `max_cost` never
+  filled with OpenAI-compatible servers and proxies that omit it. The pre-call estimate is
+  charged instead.
+- Tool calls, tool results and Gemini function parts were estimated as 1,500-token images,
+  so short agent loops were refused by `max_cost`. Only images, audio, documents and files
+  use the media estimate now.
+- Validation re-asks were charged to budgets but only the last attempt reached telemetry and
+  `callm stats`; a call whose attempts all failed recorded nothing. Usage and cost are now
+  summed across attempts.
+- Validation errors (and the repair prompt) described a nested list instead of the object
+  the model returned, for example `(root): Input should be an object` instead of
+  `needs_human: Field required`.
+- The exact cache now keys on the client's endpoint, so an Azure, vLLM, local or staging
+  client never gets answers cached from another server with the same model name.
+- Rewriting a cache entry (concurrent misses on one prompt) reset its hit count.
+- `examples/offline_demo.py` failed on openai < 3 / anthropic < 1 (`No module named httpx2`).
+- PII detection: non-ASCII emails, lowercase IBANs and IPv6 addresses are now masked, and SSH
+  remotes such as `git@github.com:org/repo.git` are no longer masked as email addresses.
+
+### Documentation
+
+- The README and docs home examples now run as written, and the no-key demo comes first in
+  the README quickstart.
+- The quickstart no longer shadows the decorator with `import callm` in step 4.
+
 ## [0.1.1] - 2026-09-16
 
 ### Fixed

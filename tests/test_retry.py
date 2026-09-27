@@ -251,3 +251,44 @@ def test_real_sdk_exceptions_are_classified(
     assert classify(ant.value).status == 529
     assert classify(ant.value).is_transient
     time.sleep(0)
+
+
+def _default_retry_openai_client(server):
+    openai = pytest.importorskip("openai")
+    from conftest import httpx2
+
+    # No max_retries argument: the SDK's own default (2 retries) is in effect.
+    return openai.OpenAI(
+        api_key="sk-test",
+        http_client=httpx2.Client(transport=httpx2.MockTransport(server.handler)),
+    )
+
+
+def test_sdk_retries_do_not_multiply_callm_retries(openai_server, slept):
+    import openai
+
+    client = _default_retry_openai_client(openai_server)
+    openai_server.fail(503, times=20, headers={"retry-after-ms": "1"})
+
+    @callm.callm(retry=2)
+    def ask():
+        return client.chat.completions.create(model="gpt-4o-mini", messages=user("x"))
+
+    with pytest.raises(openai.InternalServerError):
+        ask()
+    assert openai_server.count == 3  # was 9: three SDK attempts for each of callm's three
+
+
+def test_sdk_keeps_its_retries_when_callm_retries_are_off(openai_server, slept):
+    import openai
+
+    client = _default_retry_openai_client(openai_server)
+    openai_server.fail(503, times=20, headers={"retry-after-ms": "1"})
+
+    @callm.callm(retry=False)
+    def ask():
+        return client.chat.completions.create(model="gpt-4o-mini", messages=user("x"))
+
+    with pytest.raises(openai.InternalServerError):
+        ask()
+    assert openai_server.count == 3  # the SDK's own two retries still apply

@@ -10,6 +10,7 @@ Placeholders are numbered per request and stable for repeated values, so
 
 from __future__ import annotations
 
+import ipaddress
 import re
 import threading
 from collections.abc import Callable, Iterable
@@ -18,9 +19,11 @@ from typing import Any
 
 from callm.errors import MissingDependencyError
 
+#: Unicode-aware (``müller@beispiel.de``). ``(?!:\S)`` skips SSH remotes such as
+#: ``git@github.com:org/repo.git``, where the host is followed by ``:path``.
 _EMAIL = re.compile(
-    r"(?<![\w.+-])[A-Za-z0-9](?:[A-Za-z0-9._%+-]{0,62}[A-Za-z0-9_%+-])?"
-    r"@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,24}(?![\w-])"
+    r"(?<![\w.+-])[^\W_](?:[\w.%+-]{0,62}[\w%+-])?"
+    r"@(?:[^\W_](?:[\w-]{0,61}[^\W_])?\.)+[^\W\d_]{2,24}(?![\w-])(?!:\S)"
 )
 _SSN = re.compile(r"(?<![\d-])(?!000|666|9\d\d)\d{3}-(?!00)\d{2}-(?!0000)\d{4}(?![\d-])")
 _CARD = re.compile(r"(?<![\d-])(?:\d[ -]?){12,18}\d(?![\d-])")
@@ -35,8 +38,11 @@ _IPV4 = re.compile(
     r"(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?![\d.])"
 )
 _IBAN = re.compile(
-    r"(?<![A-Za-z0-9])[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]{4}){2,7}(?:[ ]?[A-Z0-9]{1,3})?(?![A-Za-z0-9])"
+    r"(?<![A-Za-z0-9])[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]{4}){2,7}(?:[ ]?[A-Z0-9]{1,3})?(?![A-Za-z0-9])",
+    re.IGNORECASE,  # the checksum (not the case) decides; "de89 3704 ..." is still an IBAN
 )
+#: Candidate IPv6 addresses; ``ipaddress`` decides. Needs at least two colons and hex groups.
+_IPV6 = re.compile(r"(?<![\w:.])(?:[0-9A-Fa-f]{0,4}:){2,7}[0-9A-Fa-f]{0,4}(?![\w:])")
 _DATE_LIKE = re.compile(r"^\d{4}[-./]\d{1,2}[-./]\d{1,2}$|^\d{1,2}[-./]\d{1,2}[-./]\d{2,4}$")
 _DOTTED_QUAD = re.compile(r"^\d{1,3}(?:\.\d{1,3}){3}$")
 
@@ -72,7 +78,7 @@ def card_valid(value: str) -> bool:
 
 
 def iban_valid(value: str) -> bool:
-    compact = value.replace(" ", "")
+    compact = value.replace(" ", "").upper()
     if not 15 <= len(compact) <= 34:
         return False
     rearranged = compact[4:] + compact[:4]
@@ -133,6 +139,19 @@ def _ip_detector(text: str) -> Iterable[tuple[int, int]]:
     for match in _IPV4.finditer(text):
         if _VERSION_CONTEXT.search(text[max(match.start() - 12, 0) : match.start()]):
             continue  # "version 2.10.3.4", "v1.2.3.4"
+        yield match.start(), match.end()
+    for match in _IPV6.finditer(text):
+        candidate = match.group(0)
+        if "::" not in candidate and candidate.count(":") < 7:
+            continue  # times (12:30:45), ratios and scopes are not full addresses
+        if not any(ch.isdigit() for ch in candidate):
+            continue  # "std::vector"-like hex words
+        if sum(1 for group in candidate.split(":") if group) < 2:
+            continue  # "a[::2]" slices and the "::1" loopback are not personal data
+        try:
+            ipaddress.IPv6Address(candidate)
+        except ValueError:
+            continue
         yield match.start(), match.end()
 
 

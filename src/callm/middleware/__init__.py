@@ -79,6 +79,10 @@ def transport(state: CallState) -> Step[LLMResponse]:
         )
     response = provider.parse_response(native_response, request)
     response.latency_ms = elapsed_ms
+    if not response.usage.reported:
+        # No usage in the response: leave the cost unknown so budgets charge the
+        # pre-call estimate instead of recording a free call.
+        return response
     response.cost = cost_for(
         target.provider, response.model or target.model, response.usage, warn=False
     )

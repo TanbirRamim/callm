@@ -264,15 +264,34 @@ def _tiktoken_encoder(model: str) -> Any:
     return encoder
 
 
+_MEDIA_TYPES = frozenset(
+    {"image", "image_url", "input_image", "document", "file", "input_file", "input_audio", "audio"}
+)
+_MEDIA_KEYS = ("image_url", "inline_data", "file_data", "input_audio")
+
+
+def _is_media_part(part: object) -> bool:
+    """True for image, audio, document and file parts, which are priced as media."""
+    if not isinstance(part, dict):
+        return False
+    return part.get("type") in _MEDIA_TYPES or any(key in part for key in _MEDIA_KEYS)
+
+
 def estimate_input_tokens(request: LLMRequest) -> int:
     tokens = 0
     for message in request.messages:
         tokens += 4  # per-message framing overhead
         tokens += estimate_tokens(message.text, request.model, request.provider)
         if isinstance(message.content, list):
-            tokens += _IMAGE_TOKENS_ESTIMATE * sum(
-                1 for part in message.content if not (isinstance(part, dict) and "text" in part)
-            )
+            for part in message.content:
+                if isinstance(part, dict) and "text" in part:
+                    continue  # counted in message.text
+                if _is_media_part(part):
+                    tokens += _IMAGE_TOKENS_ESTIMATE
+                else:
+                    # Tool calls, tool results and other structured blocks: size them by
+                    # their JSON rather than as an image.
+                    tokens += estimate_tokens(json.dumps(part, default=str))
     for key in ("tools", "functions", "response_format"):
         if key in request.native_extra:
             tokens += estimate_tokens(json.dumps(request.native_extra[key], default=str))
