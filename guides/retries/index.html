@@ -1193,11 +1193,11 @@ that target immediately — a <a href="../fallback/">fallback</a> usually serves
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="sdk-built-in-retries">SDK built-in retries<a class="headerlink" href="#sdk-built-in-retries" title="Permanent link">&para;</a></h2>
-<p>The OpenAI and Anthropic SDKs retry twice on their own by default. Those retries happen inside
-a single callm attempt. For predictable behaviour and accurate retry counts in telemetry, create
-clients with <code>max_retries=0</code> and let callm handle retries:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">client</span> <span class="o">=</span> <span class="n">openai</span><span class="o">.</span><span class="n">OpenAI</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</code></pre></div>
+<p>The OpenAI and Anthropic SDKs retry twice on their own by default. When callm retries or falls
+back, it calls the SDK through a copy of your client with <code>max_retries=0</code>, so the two never
+multiply (without this, <code>retry=2</code> could send up to nine requests on a persistent 429). Your
+client object itself is not changed.</p>
+<p>With <code>retry=False</code> and no fallback, callm leaves the SDK's own retries in place.</p>
 <h2 id="functions-without-an-intercepted-call">Functions without an intercepted call<a class="headerlink" href="#functions-without-an-intercepted-call" title="Permanent link">&para;</a></h2>
 <p>If a decorated function raises a retryable error <em>without</em> making an intercepted SDK call (for
 example it uses its own HTTP client), callm retries the whole function with the same policy.

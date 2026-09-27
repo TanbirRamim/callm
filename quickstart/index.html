@@ -1209,9 +1209,9 @@ the cost of every call.</p>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="go">───────────────────────────────────────────────────────────────────────────</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="go">openai         2      212   $0.0001     1 (50%)  $0.0001        0     305ms</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">callm</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">callm</span><span class="w"> </span><span class="kn">import</span> <span class="n">last_call</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">record</span> <span class="o">=</span> <span class="n">callm</span><span class="o">.</span><span class="n">last_call</span><span class="p">()</span>         <span class="c1"># telemetry of the most recent call in this context</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">record</span> <span class="o">=</span> <span class="n">last_call</span><span class="p">()</span>               <span class="c1"># telemetry of the most recent call in this context</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">record</span><span class="o">.</span><span class="n">cost_usd</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">cache_hit</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">retries</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">pii_redactions</span>
 </code></pre></div>
 <h2 id="5-async-works-the-same-way">5. Async works the same way<a class="headerlink" href="#5-async-works-the-same-way" title="Permanent link">&para;</a></h2>

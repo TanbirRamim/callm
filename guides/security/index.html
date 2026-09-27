@@ -1094,7 +1094,7 @@ placeholder within a request, so the model can still reason about it:</p>
 <tbody>
 <tr>
 <td><code>email</code></td>
-<td>RFC-style address pattern</td>
+<td>RFC-style address pattern, including non-ASCII addresses (<code>müller@beispiel.de</code>); SSH remotes such as <code>git@github.com:org/repo.git</code> are left alone</td>
 </tr>
 <tr>
 <td><code>phone</code></td>
@@ -1102,7 +1102,7 @@ placeholder within a request, so the model can still reason about it:</p>
 </tr>
 <tr>
 <td><code>ssn</code></td>
-<td>US SSN format, excluding invalid ranges</td>
+<td>US SSN format with dashes (<code>123-45-6789</code>), excluding invalid ranges; bare 9-digit numbers are too ambiguous and are not masked</td>
 </tr>
 <tr>
 <td><code>credit_card</code></td>
@@ -1110,11 +1110,11 @@ placeholder within a request, so the model can still reason about it:</p>
 </tr>
 <tr>
 <td><code>ip_address</code></td>
-<td>IPv4 with octet validation (not after <code>version</code>, <code>v</code>, <code>build</code>...)</td>
+<td>IPv4 with octet validation (not after <code>version</code>, <code>v</code>, <code>build</code>...), and IPv6 validated with <code>ipaddress</code>. A dotted version written without such a keyword ("Python 3.12.1.2") looks exactly like an IPv4 address and is masked</td>
 </tr>
 <tr>
 <td><code>iban</code></td>
-<td>IBAN format, <strong>mod-97 checksum-validated</strong></td>
+<td>IBAN format in upper or lower case, <strong>mod-97 checksum-validated</strong></td>
 </tr>
 <tr>
 <td><code>person</code></td>
