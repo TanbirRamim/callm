@@ -95,6 +95,9 @@ class PatchTarget:
     cls: str
     method: str
     is_async: bool
+    #: True for SDK methods callm does not intercept yet: inside @callm they only log a
+    #: one-time warning, so nobody assumes PII masking or budgets apply when they do not.
+    warn_only: bool = False
 
 
 PATCH_TARGETS: tuple[PatchTarget, ...] = (
@@ -104,6 +107,37 @@ PATCH_TARGETS: tuple[PatchTarget, ...] = (
     PatchTarget("anthropic", "anthropic.resources.messages", "AsyncMessages", "create", True),
     PatchTarget("google", "google.genai.models", "Models", "generate_content", False),
     PatchTarget("google", "google.genai.models", "AsyncModels", "generate_content", True),
+    *(
+        PatchTarget(provider, module, cls, method, cls.startswith("Async"), warn_only=True)
+        for provider, module, classes, methods in (
+            (
+                "openai",
+                "openai.resources.responses",
+                ("Responses", "AsyncResponses"),
+                ("create", "parse", "stream"),
+            ),
+            (
+                "openai",
+                "openai.resources.chat.completions",
+                ("Completions", "AsyncCompletions"),
+                ("parse", "stream"),
+            ),
+            (
+                "openai",
+                "openai.resources.beta.chat.completions",
+                ("Completions", "AsyncCompletions"),
+                ("parse", "stream"),
+            ),
+            (
+                "anthropic",
+                "anthropic.resources.messages",
+                ("Messages", "AsyncMessages"),
+                ("stream",),
+            ),
+        )
+        for cls in classes
+        for method in methods
+    ),
 )
 _ROOT_PACKAGES = {"openai": "openai", "anthropic": "anthropic", "google": "google.genai"}
 _RAW_RESPONSE_HEADERS = frozenset({"x-stainless-raw-response", "x-stainless-streamed-raw-response"})
@@ -241,6 +275,63 @@ def _finish(target: PatchTarget, state: CallState, response: LLMResponse) -> Any
     return get_provider(target.provider).native_for(response)
 
 
+_warned_methods: set[str] = set()
+
+
+def _unprotected_features(config: CallConfig) -> str:
+    features = []
+    if config.pii is not None:
+        features.append("PII masking")
+    if config.injection is not None:
+        features.append("injection checks")
+    if config.max_cost is not None or config.budgets:
+        features.append("budgets")
+    if config.cache is not None:
+        features.append("caching")
+    if config.output_schema is not None:
+        features.append("output validation")
+    if config.fallback:
+        features.append("fallback")
+    if config.retry.max_retries:
+        features.append("callm retries")
+    features.append("cost tracking and telemetry")
+    return ", ".join(features)
+
+
+def _make_warning_wrapper(target: PatchTarget, original: Callable[..., Any]) -> Callable[..., Any]:
+    """Pass-through wrapper for SDK methods callm does not intercept yet.
+
+    Plain (non-async) on purpose: async originals return their coroutine or stream manager
+    unchanged, so behaviour and return types stay exactly those of the SDK.
+    """
+    name = f"{target.provider} {target.cls}.{target.method}"
+    label = (
+        "responses." + target.method
+        if "responses" in target.module
+        else ("messages." if target.provider == "anthropic" else "chat.completions.")
+        + target.method
+    )
+
+    @functools.wraps(original)
+    def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+        ctx = ACTIVE.get()
+        if ctx is not None and not BYPASS.get() and name not in _warned_methods:
+            _warned_methods.add(name)
+            logger.warning(
+                "callm: %s (%s) is not intercepted by callm yet, so inside %s it runs without %s. "
+                "Use %s for now: https://tanbirramim.github.io/callm/faq/",
+                label,
+                target.provider,
+                ctx.name or "@callm",
+                _unprotected_features(ctx.config),
+                "messages.create" if target.provider == "anthropic" else "chat.completions.create",
+            )
+        return original(self, *args, **kwargs)
+
+    wrapper.__callm_original__ = original  # type: ignore[attr-defined]
+    return wrapper
+
+
 def _make_sync_wrapper(target: PatchTarget, original: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(original)
     def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
@@ -304,7 +395,10 @@ def _patch_module(module: ModuleType, provider: str) -> None:
             if existing is not None:  # already instrumented (e.g. module reloaded)
                 _patched[target] = existing
                 continue
-            make = _make_async_wrapper if target.is_async else _make_sync_wrapper
+            if target.warn_only:
+                make = _make_warning_wrapper
+            else:
+                make = _make_async_wrapper if target.is_async else _make_sync_wrapper
             setattr(cls, target.method, make(target, original))
             _patched[target] = original
             logger.debug("callm: instrumented %s.%s.%s", target.module, target.cls, target.method)

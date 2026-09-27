@@ -272,7 +272,7 @@ def _cmd_info(args: argparse.Namespace) -> int:
         "enabled": settings.enabled,
         "providers": provider_names(),
         "instrumented_methods": sorted(
-            {f"{t.provider}: {t.cls}.{t.method}" for t in PATCH_TARGETS}
+            {f"{t.provider}: {t.cls}.{t.method}" for t in PATCH_TARGETS if not t.warn_only}
         ),
         "optional_packages": optional,
     }
