@@ -167,3 +167,32 @@ def test_complete_with_output_schema(providers, anthropic_server):
 def test_candidate_json_deduplicates():
     assert candidate_json('{"a": 1}') == ['{"a": 1}']
     assert candidate_json("") == []
+
+
+def test_errors_come_from_the_first_candidate_that_is_valid_json():
+    from pydantic import BaseModel
+
+    from callm.validation import ValidationFailure, validate_text
+
+    class Ticket(BaseModel):
+        category: str
+        tags: list[str]
+        needs_human: bool
+
+    text = 'Here is the result: {"category": "billing", "tags": ["refund", "urgent"]}'
+    with pytest.raises(ValidationFailure) as info:
+        validate_text(text, Ticket)
+    assert info.value.errors == ["needs_human: Field required"]
+
+
+def test_errors_fall_back_to_the_whole_text_when_nothing_is_valid_json():
+    from pydantic import BaseModel
+
+    from callm.validation import ValidationFailure, validate_text
+
+    class Ticket(BaseModel):
+        category: str
+
+    with pytest.raises(ValidationFailure) as info:
+        validate_text("Sorry, I can't help with that.", Ticket)
+    assert info.value.errors and "(root)" in info.value.errors[0]

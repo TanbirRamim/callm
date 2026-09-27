@@ -277,3 +277,36 @@ async def test_async_budget_scope(async_openai_client, openai_server):
             await ask()  # the estimate alone exceeds the limit
     assert scope.spent == 0
     assert openai_server.count == 0
+
+
+def test_tool_blocks_are_not_estimated_as_images():
+    from callm.providers.registry import get_provider
+
+    messages = [{"role": "user", "content": "weather?"}]
+    for i in range(10):
+        messages.append({"role": "assistant", "content": [{"type": "tool_use", "id": f"t{i}", "name": "w", "input": {}}]})
+        messages.append({"role": "user", "content": [{"type": "tool_result", "tool_use_id": f"t{i}", "content": "sunny"}]})
+    request = get_provider("anthropic").parse_native_request(
+        {"model": "claude-sonnet-5", "max_tokens": 100, "messages": messages}
+    )
+    assert pricing.estimate_input_tokens(request) < 1_000
+
+
+def test_images_still_use_the_image_estimate():
+    from callm.providers.registry import get_provider
+
+    request = get_provider("openai").parse_native_request(
+        {
+            "model": "gpt-4o",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "what is this?"},
+                        {"type": "image_url", "image_url": {"url": "https://example.com/cat.png"}},
+                    ],
+                }
+            ],
+        }
+    )
+    assert pricing.estimate_input_tokens(request) >= 1_500
