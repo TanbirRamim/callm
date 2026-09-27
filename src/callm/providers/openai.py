@@ -189,7 +189,10 @@ class OpenAIProvider(Provider):
         completion = int(attr(usage_obj, "completion_tokens", 0) or 0)
         cached = int(attr(attr(usage_obj, "prompt_tokens_details"), "cached_tokens", 0) or 0)
         usage = Usage(
-            input_tokens=max(prompt - cached, 0), output_tokens=completion, cache_read_tokens=cached
+            input_tokens=max(prompt - cached, 0),
+            output_tokens=completion,
+            cache_read_tokens=cached,
+            reported=usage_obj is not None,
         )
         return LLMResponse(
             text=text,

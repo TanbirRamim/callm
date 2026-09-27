@@ -280,7 +280,10 @@ class GoogleProvider(Provider):
             attr(meta, "thoughts_token_count", 0) or 0
         )
         usage = Usage(
-            input_tokens=max(prompt - cached, 0), output_tokens=output, cache_read_tokens=cached
+            input_tokens=max(prompt - cached, 0),
+            output_tokens=output,
+            cache_read_tokens=cached,
+            reported=meta is not None,
         )
         return LLMResponse(
             text="".join(texts),
