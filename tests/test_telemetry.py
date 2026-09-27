@@ -307,3 +307,17 @@ def test_sqlite_reconnects_after_fork(tmp_path):
     _, status = os.waitpid(pid, 0)
     assert os.WEXITSTATUS(status) == 0
     assert len(storage.query()) == 2
+
+
+def test_sqlite_cache_rewrite_keeps_the_hit_count(tmp_path):
+    from callm.storage.base import CacheEntry
+    from callm.storage.sqlite import SQLiteStorage
+
+    store = SQLiteStorage(tmp_path / "callm.db")
+    store.set(CacheEntry(key="k", response={"text": "a"}))
+    store.get("k")
+    store.get("k")
+    # Concurrent misses on the same prompt write the same key again.
+    store.set(CacheEntry(key="k", response={"text": "b"}))
+    assert store.get("k").response == {"text": "b"}
+    assert store.stats()["hits"] == 3
