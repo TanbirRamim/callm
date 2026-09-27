@@ -414,13 +414,15 @@ Measured offline with the real OpenAI SDK against a fake server
 
 ## Contributing
 
-Contributions are welcome — see [CONTRIBUTING.md](https://github.com/TanbirRamim/callm/blob/main/CONTRIBUTING.md). The test suite runs
+Contributions are welcome. The [good first issues](https://github.com/TanbirRamim/callm/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) are small and scoped, and every pull request gets a review. See [CONTRIBUTING.md](https://github.com/TanbirRamim/callm/blob/main/CONTRIBUTING.md). The test suite runs
 entirely offline against the real provider SDKs with mocked HTTP transports:
 
 ```bash
 uv sync
 uv run pytest
 ```
+
+If callm is useful to you, a star helps other people find it.
 
 ## License
 

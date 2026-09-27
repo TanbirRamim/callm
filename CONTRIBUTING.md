@@ -3,6 +3,12 @@
 Thanks for helping make LLM calls boring and reliable. This guide covers everything you need to
 get a change merged.
 
+## Picking something to work on
+
+Start with an issue labelled [good first issue](https://github.com/TanbirRamim/callm/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+Comment on it and wait to be assigned before you start, so two people don't solve the same
+issue. For anything larger, open an issue to discuss the approach first.
+
 ## Ground rules
 
 - **Zero required dependencies.** The core package imports only the standard library. Anything
