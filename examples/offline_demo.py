@@ -20,8 +20,12 @@ import tempfile
 os.environ.setdefault("CALLM_HOME", os.path.join(tempfile.gettempdir(), "callm-demo"))
 
 import anthropic
-import httpx2
 import openai
+
+try:  # openai >= 3 and anthropic >= 1 use httpx2; older SDK versions use httpx
+    import httpx2
+except ImportError:
+    import httpx as httpx2
 from pydantic import BaseModel
 
 import callm

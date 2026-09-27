@@ -78,9 +78,9 @@ openai         2      212   $0.0001     1 (50%)  $0.0001        0     305ms
 ```
 
 ```python
-import callm
+from callm import last_call
 
-record = callm.last_call()         # telemetry of the most recent call in this context
+record = last_call()               # telemetry of the most recent call in this context
 record.cost_usd, record.cache_hit, record.retries, record.pii_redactions
 ```
 
