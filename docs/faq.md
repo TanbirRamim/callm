@@ -7,7 +7,7 @@ implementation directly when there is none. `CALLM_DISABLED=1` turns callm off e
 
 ## Is monkeypatching safe?
 
-callm wraps exactly six public SDK methods, keeps the originals, and only acts inside a scope.
+callm wraps eight public SDK methods (the `create` / `generate_content` calls, sync and async), keeps the originals, and only acts inside a scope.
 Observability tools such as OpenTelemetry instrumentations use the same technique. If an SDK
 changes its internals in a way callm cannot parse, the call is passed through unchanged with a
 warning — unless PII or injection protection is enabled, in which case callm refuses to send a
@@ -15,16 +15,28 @@ request it could not inspect.
 
 ## Which calls are not intercepted?
 
-- SDK helpers that bypass `create` / `generate_content` internally: the OpenAI Responses API
-  (`client.responses.create/parse/stream`), `client.chat.completions.parse/stream` (and the
-  older `client.beta.chat.completions.parse/stream`) and Anthropic's `client.messages.stream(...)`.
-  Inside a callm function these log a one-time warning naming the protections that do not
-  apply (PII masking, budgets, caching...), so this never happens silently. Use `create` (or
-  `callm.complete(...)`) for now; intercepting these helpers is planned.
+- SDK helpers that bypass `create` internally: OpenAI's `client.responses.parse/stream`,
+  `client.chat.completions.parse/stream` (and the older `client.beta.chat.completions.parse/stream`)
+  and Anthropic's `client.messages.stream(...)`. Inside a callm function these log a one-time
+  warning naming the protections that do not apply (PII masking, budgets, caching...), so this
+  never happens silently. Use `create` (or `callm.complete(...)`) for now. The Responses API's
+  `client.responses.create` is fully intercepted.
 - `with_raw_response` calls (intentionally passed through).
 - Calls in threads started without copying the context.
 - Clients callm has no adapter for. Their responses are still recorded in telemetry when the
   decorated function returns a recognised SDK response object.
+
+## Does callm work with the OpenAI Responses API?
+
+Yes. `client.responses.create(...)` (sync and async) gets the same treatment as
+`chat.completions.create`: `instructions`, string `input` and input items are masked and
+scanned (including `function_call_output` tool results), budgets and `max_cost` apply, results
+are cached, validated and costed, and fallbacks to Anthropic or Gemini still return a
+`Response` with `output_text`. Calls are recorded under the provider name `openai-responses`
+and priced with OpenAI's prices. Requests that depend on server-side state or tools
+(`previous_response_id`, `conversation`, `tools`, `reasoning`...) never fall back to another
+provider, and `callm.complete("openai-responses/gpt-5-mini", ...)` sends a request through
+the Responses API directly.
 
 ## What happens with `NOT_GIVEN` arguments?
 

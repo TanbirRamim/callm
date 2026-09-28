@@ -14,12 +14,16 @@ from typing import Any
 PORTABLE_ROLES = frozenset({"system", "user", "assistant"})
 
 
+#: ``input_text``/``output_text`` are the OpenAI Responses API text parts.
+_TEXT_PART_TYPES = frozenset({"text", "input_text", "output_text"})
+
+
 def is_text_part(part: Any) -> bool:
     """True for content parts that carry plain text (OpenAI, Anthropic and Gemini shapes)."""
     return (
         isinstance(part, dict)
         and isinstance(part.get("text"), str)
-        and part.get("type", "text") == "text"
+        and part.get("type", "text") in _TEXT_PART_TYPES
         and not part.get("thought", False)
     )
 

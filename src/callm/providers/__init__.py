@@ -4,12 +4,14 @@ from callm.providers.anthropic import AnthropicProvider
 from callm.providers.base import Provider
 from callm.providers.google import GoogleProvider
 from callm.providers.openai import OpenAIProvider
+from callm.providers.openai_responses import OpenAIResponsesProvider
 from callm.providers.registry import get_provider, parse_target, provider_names, register_provider
 
 __all__ = [
     "AnthropicProvider",
     "GoogleProvider",
     "OpenAIProvider",
+    "OpenAIResponsesProvider",
     "Provider",
     "get_provider",
     "parse_target",
