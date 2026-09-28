@@ -103,7 +103,7 @@ def _export_span(record: CallRecord, start_ns: int | None) -> None:
         )
         attributes: dict[str, Any] = {
             "gen_ai.operation.name": "chat",
-            "gen_ai.system": record.provider,
+            "gen_ai.system": "openai" if record.provider == "openai-responses" else record.provider,
             "gen_ai.request.model": record.model,
             "gen_ai.usage.input_tokens": record.input_tokens
             + record.cache_read_tokens

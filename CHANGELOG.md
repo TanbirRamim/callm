@@ -8,7 +8,12 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
-- Inside a callm function, SDK helpers callm does not intercept yet (`responses.create/parse/stream`,
+- OpenAI Responses API support: `client.responses.create(...)`, sync and async, is intercepted
+  like `chat.completions.create`. `instructions`, string and item `input` and tool outputs get
+  PII masking and injection checks; budgets, caching, output validation, retries, cost and
+  telemetry apply; fallbacks to other providers return a real `Response` object. The adapter is
+  also available as the `openai-responses` provider for `callm.complete` and fallback chains.
+- Inside a callm function, SDK helpers callm does not intercept yet (`responses.parse/stream`,
   `chat.completions.parse/stream`, `beta.chat.completions.parse/stream`, Anthropic
   `messages.stream`) now log a one-time warning naming the protections that do not apply,
   instead of silently skipping PII masking, budgets and telemetry.

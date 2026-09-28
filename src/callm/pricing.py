@@ -161,8 +161,11 @@ def _lookup(table: dict[str, ModelPrice], name: str) -> ModelPrice | None:
     return table[best] if best is not None else None
 
 
+_PRICE_ALIASES = {"gemini": "google", "openai-responses": "openai"}
+
+
 def _provider_key(provider: str) -> str:
-    return "google" if provider == "gemini" else provider
+    return _PRICE_ALIASES.get(provider, provider)
 
 
 def get_price(provider: str, model: str) -> ModelPrice | None:
@@ -235,7 +238,7 @@ def estimate_tokens(text: str, model: str | None = None, provider: str | None = 
     """Estimate a token count. Uses ``tiktoken`` for OpenAI models when it is installed."""
     if not text:
         return 0
-    if provider in (None, "openai") and model is not None:
+    if provider in (None, "openai", "openai-responses") and model is not None:
         encoder = _tiktoken_encoder(model)
         if encoder is not None:
             return len(encoder.encode(text, disallowed_special=()))

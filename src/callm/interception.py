@@ -103,6 +103,8 @@ class PatchTarget:
 PATCH_TARGETS: tuple[PatchTarget, ...] = (
     PatchTarget("openai", "openai.resources.chat.completions", "Completions", "create", False),
     PatchTarget("openai", "openai.resources.chat.completions", "AsyncCompletions", "create", True),
+    PatchTarget("openai-responses", "openai.resources.responses", "Responses", "create", False),
+    PatchTarget("openai-responses", "openai.resources.responses", "AsyncResponses", "create", True),
     PatchTarget("anthropic", "anthropic.resources.messages", "Messages", "create", False),
     PatchTarget("anthropic", "anthropic.resources.messages", "AsyncMessages", "create", True),
     PatchTarget("google", "google.genai.models", "Models", "generate_content", False),
@@ -111,10 +113,10 @@ PATCH_TARGETS: tuple[PatchTarget, ...] = (
         PatchTarget(provider, module, cls, method, cls.startswith("Async"), warn_only=True)
         for provider, module, classes, methods in (
             (
-                "openai",
+                "openai-responses",
                 "openai.resources.responses",
                 ("Responses", "AsyncResponses"),
-                ("create", "parse", "stream"),
+                ("parse", "stream"),
             ),
             (
                 "openai",
@@ -139,7 +141,12 @@ PATCH_TARGETS: tuple[PatchTarget, ...] = (
         for method in methods
     ),
 )
-_ROOT_PACKAGES = {"openai": "openai", "anthropic": "anthropic", "google": "google.genai"}
+_ROOT_PACKAGES = {
+    "openai": "openai",
+    "openai-responses": "openai",
+    "anthropic": "anthropic",
+    "google": "google.genai",
+}
 _RAW_RESPONSE_HEADERS = frozenset({"x-stainless-raw-response", "x-stainless-streamed-raw-response"})
 
 _lock = threading.RLock()
@@ -194,6 +201,7 @@ def client_endpoint(resource: Any) -> str | None:
 # Where each patched resource lives on its SDK client, to rebuild it on a client copy.
 _RESOURCE_PATHS: dict[str, tuple[str, ...]] = {
     "openai": ("chat", "completions"),
+    "openai-responses": ("responses",),
     "anthropic": ("messages",),
 }
 _no_retry_resources: weakref.WeakKeyDictionary[Any, Any] = weakref.WeakKeyDictionary()
@@ -276,6 +284,10 @@ def _finish(target: PatchTarget, state: CallState, response: LLMResponse) -> Any
 
 
 _warned_methods: set[str] = set()
+_SUPPORTED_ALTERNATIVE = {
+    "anthropic": "messages.create",
+    "openai-responses": "responses.create",
+}
 
 
 def _unprotected_features(config: CallConfig) -> str:
@@ -324,7 +336,7 @@ def _make_warning_wrapper(target: PatchTarget, original: Callable[..., Any]) -> 
                 target.provider,
                 ctx.name or "@callm",
                 _unprotected_features(ctx.config),
-                "messages.create" if target.provider == "anthropic" else "chat.completions.create",
+                _SUPPORTED_ALTERNATIVE.get(target.provider, "chat.completions.create"),
             )
         return original(self, *args, **kwargs)
 

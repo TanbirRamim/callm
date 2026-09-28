@@ -42,7 +42,9 @@ def detect_provider(value: Any) -> str | None:
     """Which provider SDK produced ``value`` (a native response object), if any."""
     module = type(value).__module__ or ""
     if module.startswith("openai"):
-        return "openai" if hasattr(value, "choices") else None
+        if hasattr(value, "choices"):
+            return "openai"
+        return "openai-responses" if hasattr(value, "output") and hasattr(value, "usage") else None
     if module.startswith("anthropic"):
         return "anthropic" if hasattr(value, "content") and hasattr(value, "usage") else None
     if module.startswith("google.genai"):
@@ -50,6 +52,8 @@ def detect_provider(value: Any) -> str | None:
     if isinstance(value, AttrDict):
         if "choices" in value:
             return "openai"
+        if value.get("object") == "response":
+            return "openai-responses"
         if value.get("type") == "message":
             return "anthropic"
         if "candidates" in value:

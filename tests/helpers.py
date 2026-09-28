@@ -154,3 +154,47 @@ def gemini_body(
 
 def user(text: str) -> list[dict[str, str]]:
     return [{"role": "user", "content": text}]
+
+
+def responses_body(
+    text: str = "Hello from Responses",
+    model: str = "gpt-4o-mini-2024-07-18",
+    input_tokens: int = 12,
+    output_tokens: int = 5,
+    cached_tokens: int = 0,
+    status: str = "completed",
+    output: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """An OpenAI Responses API body (``POST /responses``)."""
+    return {
+        "id": "resp_mock",
+        "object": "response",
+        "created_at": 1_700_000_000,
+        "model": model,
+        "status": status,
+        "incomplete_details": {"reason": "max_output_tokens"} if status == "incomplete" else None,
+        "error": None,
+        "instructions": None,
+        "metadata": {},
+        "output": output
+        if output is not None
+        else [
+            {
+                "type": "message",
+                "id": "msg_mock",
+                "role": "assistant",
+                "status": "completed",
+                "content": [{"type": "output_text", "text": text, "annotations": []}],
+            }
+        ],
+        "parallel_tool_calls": True,
+        "tool_choice": "auto",
+        "tools": [],
+        "usage": {
+            "input_tokens": input_tokens,
+            "input_tokens_details": {"cached_tokens": cached_tokens, "cache_write_tokens": 0},
+            "output_tokens": output_tokens,
+            "output_tokens_details": {"reasoning_tokens": 0},
+            "total_tokens": input_tokens + output_tokens,
+        },
+    }

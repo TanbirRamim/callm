@@ -9,6 +9,7 @@ from callm.providers.anthropic import AnthropicProvider
 from callm.providers.base import Provider
 from callm.providers.google import GoogleProvider
 from callm.providers.openai import OpenAIProvider
+from callm.providers.openai_responses import OpenAIResponsesProvider
 from callm.types import Target
 
 _lock = threading.Lock()
@@ -21,6 +22,7 @@ def _install_defaults() -> None:
     _providers.update(
         {
             "openai": OpenAIProvider("openai", model_prefixes=_OPENAI_PREFIXES),
+            "openai-responses": OpenAIResponsesProvider(),
             "anthropic": AnthropicProvider(),
             "google": GoogleProvider(),
             "ollama": OpenAIProvider(
