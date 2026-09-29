@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-29
+
 ### Added
 
 - OpenAI Responses API support: `client.responses.create(...)`, sync and async, is intercepted
@@ -98,7 +100,8 @@ Initial release.
   budgets) from enclosing decorators and shields apply to inner calls.
 - `callm` CLI: `stats`, `calls`, `cache`, `pricing`, `telemetry`, `info`.
 
-[Unreleased]: https://github.com/TanbirRamim/callm/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/TanbirRamim/callm/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/TanbirRamim/callm/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/TanbirRamim/callm/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/TanbirRamim/callm/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/TanbirRamim/callm/releases/tag/v0.1.0
