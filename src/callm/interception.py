@@ -302,11 +302,13 @@ def _as_parsed_completion(native: Any, extra: dict[str, Any]) -> Any:
         from openai.lib._parsing import parse_chat_completion
     except ImportError:
         return native
-    not_given = getattr(openai, "omit", None) or getattr(openai, "NOT_GIVEN", None)
+    not_given: Any = getattr(openai, "omit", None) or getattr(openai, "NOT_GIVEN", None)
+    response_format: Any = extra.get("response_format", not_given)
+    input_tools: Any = extra.get("tools", not_given)
     try:
         return parse_chat_completion(
-            response_format=extra.get("response_format", not_given),
-            input_tools=extra.get("tools", not_given),
+            response_format=response_format,
+            input_tools=input_tools,
             chat_completion=native,
         )
     except (TypeError, AttributeError):  # an AttrDict without the SDK types
