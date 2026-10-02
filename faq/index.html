@@ -979,6 +979,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#does-callm-work-with-structured-outputs-chatcompletionsparse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Does callm work with structured outputs (chat.completions.parse)?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-happens-with-not_given-arguments" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1134,6 +1145,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#does-callm-work-with-structured-outputs-chatcompletionsparse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Does callm work with structured outputs (chat.completions.parse)?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-happens-with-not_given-arguments" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1235,19 +1257,20 @@
 <p>No. The instrumented SDK methods check for an active callm scope first and call the original
 implementation directly when there is none. <code>CALLM_DISABLED=1</code> turns callm off entirely.</p>
 <h2 id="is-monkeypatching-safe">Is monkeypatching safe?<a class="headerlink" href="#is-monkeypatching-safe" title="Permanent link">&para;</a></h2>
-<p>callm wraps eight public SDK methods (the <code>create</code> / <code>generate_content</code> calls, sync and async), keeps the originals, and only acts inside a scope.
+<p>callm wraps ten public SDK methods (the <code>create</code> / <code>generate_content</code> calls and OpenAI's <code>chat.completions.parse</code>, sync and async), keeps the originals, and only acts inside a scope.
 Observability tools such as OpenTelemetry instrumentations use the same technique. If an SDK
 changes its internals in a way callm cannot parse, the call is passed through unchanged with a
 warning — unless PII or injection protection is enabled, in which case callm refuses to send a
 request it could not inspect.</p>
 <h2 id="which-calls-are-not-intercepted">Which calls are not intercepted?<a class="headerlink" href="#which-calls-are-not-intercepted" title="Permanent link">&para;</a></h2>
 <ul>
-<li>SDK helpers that bypass <code>create</code> internally: OpenAI's <code>client.responses.parse/stream</code>,
-  <code>client.chat.completions.parse/stream</code> (and the older <code>client.beta.chat.completions.parse/stream</code>)
-  and Anthropic's <code>client.messages.stream(...)</code>. Inside a callm function these log a one-time
-  warning naming the protections that do not apply (PII masking, budgets, caching...), so this
-  never happens silently. Use <code>create</code> (or <code>callm.complete(...)</code>) for now. The Responses API's
-  <code>client.responses.create</code> is fully intercepted.</li>
+<li>Streaming helpers that bypass <code>create</code> internally: OpenAI's <code>client.responses.stream</code> and
+  <code>client.chat.completions.stream</code>, <code>client.responses.parse</code>, the older
+  <code>client.beta.chat.completions.parse/stream</code>, and Anthropic's <code>client.messages.stream(...)</code>.
+  Inside a callm function these log a one-time warning naming the protections that do not
+  apply (PII masking, budgets, caching...), so this never happens silently. Use <code>create</code>
+  (or <code>callm.complete(...)</code>) for now. <code>client.responses.create</code> and
+  <code>client.chat.completions.parse</code> are fully intercepted.</li>
 <li><code>with_raw_response</code> calls (intentionally passed through).</li>
 <li>Calls in threads started without copying the context.</li>
 <li>Clients callm has no adapter for. Their responses are still recorded in telemetry when the
@@ -1263,6 +1286,13 @@ and priced with OpenAI's prices. Requests that depend on server-side state or to
 (<code>previous_response_id</code>, <code>conversation</code>, <code>tools</code>, <code>reasoning</code>...) never fall back to another
 provider, and <code>callm.complete("openai-responses/gpt-5-mini", ...)</code> sends a request through
 the Responses API directly.</p>
+<h2 id="does-callm-work-with-structured-outputs-chatcompletionsparse">Does callm work with structured outputs (<code>chat.completions.parse</code>)?<a class="headerlink" href="#does-callm-work-with-structured-outputs-chatcompletionsparse" title="Permanent link">&para;</a></h2>
+<p>Yes. <code>client.chat.completions.parse(..., response_format=MyModel)</code> gets the same treatment as
+<code>create</code>: PII masking, budgets, caching, retries, cost and telemetry. You still get a
+<code>ParsedChatCompletion</code> with <code>.choices[0].message.parsed</code>, including on a cache hit: callm
+stores the completion and re-runs the SDK's own parser with your <code>response_format</code>. The cache
+key includes the response format's JSON schema, so two different models never share an entry.
+Fallbacks stay on OpenAI models, because <code>response_format</code> has no equivalent on other providers.</p>
 <h2 id="what-happens-with-not_given-arguments">What happens with <code>NOT_GIVEN</code> arguments?<a class="headerlink" href="#what-happens-with-not_given-arguments" title="Permanent link">&para;</a></h2>
 <p>The SDKs' <code>NOT_GIVEN</code> / <code>Omit</code> sentinels mean "argument not passed" and are dropped before callm
 inspects the request, so patterns like <code>system=system or NOT_GIVEN</code> work normally.</p>
