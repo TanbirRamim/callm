@@ -103,6 +103,8 @@ class PatchTarget:
 PATCH_TARGETS: tuple[PatchTarget, ...] = (
     PatchTarget("openai", "openai.resources.chat.completions", "Completions", "create", False),
     PatchTarget("openai", "openai.resources.chat.completions", "AsyncCompletions", "create", True),
+    PatchTarget("openai", "openai.resources.chat.completions", "Completions", "parse", False),
+    PatchTarget("openai", "openai.resources.chat.completions", "AsyncCompletions", "parse", True),
     PatchTarget("openai-responses", "openai.resources.responses", "Responses", "create", False),
     PatchTarget("openai-responses", "openai.resources.responses", "AsyncResponses", "create", True),
     PatchTarget("anthropic", "anthropic.resources.messages", "Messages", "create", False),
@@ -122,7 +124,7 @@ PATCH_TARGETS: tuple[PatchTarget, ...] = (
                 "openai",
                 "openai.resources.chat.completions",
                 ("Completions", "AsyncCompletions"),
-                ("parse", "stream"),
+                ("stream",),
             ),
             (
                 "openai",
@@ -280,7 +282,36 @@ def clean_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
 def _finish(target: PatchTarget, state: CallState, response: LLMResponse) -> Any:
     if state.request.stream:
         return response.raw
-    return get_provider(target.provider).native_for(response)
+    native = get_provider(target.provider).native_for(response)
+    if target.provider == "openai" and target.method == "parse":
+        native = _as_parsed_completion(native, state.request.native_extra)
+    return native
+
+
+def _as_parsed_completion(native: Any, extra: dict[str, Any]) -> Any:
+    """The ``ParsedChatCompletion`` that ``chat.completions.parse`` promises its caller.
+
+    A live call already returns one. A cache hit, or a response synthesized after a
+    fallback, is a plain ``ChatCompletion``, so run it through the SDK's own parser
+    with the caller's ``response_format`` and ``tools``.
+    """
+    if type(native).__name__.startswith("Parsed"):
+        return native
+    try:
+        import openai
+        from openai.lib._parsing import parse_chat_completion
+    except ImportError:
+        return native
+    not_given = getattr(openai, "omit", None) or getattr(openai, "NOT_GIVEN", None)
+    try:
+        return parse_chat_completion(
+            response_format=extra.get("response_format", not_given),
+            input_tools=extra.get("tools", not_given),
+            chat_completion=native,
+        )
+    except (TypeError, AttributeError):  # an AttrDict without the SDK types
+        logger.debug("callm: could not rebuild a ParsedChatCompletion", exc_info=True)
+        return native
 
 
 _warned_methods: set[str] = set()

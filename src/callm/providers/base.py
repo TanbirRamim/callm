@@ -61,7 +61,14 @@ def dump_json(obj: Any) -> dict[str, Any] | None:
     dump = getattr(obj, "model_dump", None)
     if callable(dump):
         try:
-            result = dump(mode="json", exclude_none=True)
+            # warnings=False: ParsedChatCompletion types `parsed` loosely, so pydantic
+            # would warn on every call even though the dump is correct.
+            result = dump(mode="json", exclude_none=True, warnings=False)
+        except TypeError:  # an object whose model_dump has no `warnings` option
+            try:
+                result = dump(mode="json", exclude_none=True)
+            except Exception:
+                return None
         except Exception:
             return None
         return result if isinstance(result, dict) else None

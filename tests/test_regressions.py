@@ -513,8 +513,8 @@ def test_last_call_is_per_context_for_concurrent_tasks(async_openai_client):
 def test_unintercepted_sdk_methods_warn_inside_callm(openai_client, openai_server, caplog):
     import logging
 
-    if not hasattr(openai_client.chat.completions, "parse"):
-        pytest.skip("this openai version has no chat.completions.parse")
+    if not hasattr(openai_client.chat.completions, "stream"):
+        pytest.skip("this openai version has no chat.completions.stream")
     from callm import interception
 
     interception._warned_methods.clear()
@@ -522,18 +522,19 @@ def test_unintercepted_sdk_methods_warn_inside_callm(openai_client, openai_serve
 
     @callm.callm(block_pii=True, max_cost=1.0)
     def ask():
-        return openai_client.chat.completions.parse(model="gpt-4o-mini", messages=messages)
+        # stream() returns a manager and sends nothing until it is entered
+        return openai_client.chat.completions.stream(model="gpt-4o-mini", messages=messages)
 
     with caplog.at_level(logging.WARNING, logger="callm"):
         ask()
         ask()
     warnings = [r.getMessage() for r in caplog.records if "not intercepted" in r.getMessage()]
     assert len(warnings) == 1  # once per method, not per call
-    assert "chat.completions.parse" in warnings[0]
+    assert "chat.completions.stream" in warnings[0]
     assert "PII masking" in warnings[0] and "budgets" in warnings[0]
 
     caplog.clear()
     with caplog.at_level(logging.WARNING, logger="callm"):
         interception._warned_methods.clear()
-        openai_client.chat.completions.parse(model="gpt-4o-mini", messages=messages)  # outside
+        openai_client.chat.completions.stream(model="gpt-4o-mini", messages=messages)  # outside
     assert not [r for r in caplog.records if "not intercepted" in r.getMessage()]
