@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- OpenAI structured outputs: `client.chat.completions.parse(...)`, sync and async, is now
+  intercepted. PII masking, budgets, caching, retries, cost and telemetry apply, and the
+  caller still gets a `ParsedChatCompletion` with `.parsed`, also on cache hits. Different
+  `response_format` models never share a cache entry.
+
+### Fixed
+
+- Storing a `ParsedChatCompletion` for the cache no longer prints pydantic serializer
+  warnings.
+
 ## [0.2.0] - 2026-09-29
 
 ### Added

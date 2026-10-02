@@ -7,7 +7,7 @@ implementation directly when there is none. `CALLM_DISABLED=1` turns callm off e
 
 ## Is monkeypatching safe?
 
-callm wraps eight public SDK methods (the `create` / `generate_content` calls, sync and async), keeps the originals, and only acts inside a scope.
+callm wraps ten public SDK methods (the `create` / `generate_content` calls and OpenAI's `chat.completions.parse`, sync and async), keeps the originals, and only acts inside a scope.
 Observability tools such as OpenTelemetry instrumentations use the same technique. If an SDK
 changes its internals in a way callm cannot parse, the call is passed through unchanged with a
 warning — unless PII or injection protection is enabled, in which case callm refuses to send a
@@ -15,12 +15,13 @@ request it could not inspect.
 
 ## Which calls are not intercepted?
 
-- SDK helpers that bypass `create` internally: OpenAI's `client.responses.parse/stream`,
-  `client.chat.completions.parse/stream` (and the older `client.beta.chat.completions.parse/stream`)
-  and Anthropic's `client.messages.stream(...)`. Inside a callm function these log a one-time
-  warning naming the protections that do not apply (PII masking, budgets, caching...), so this
-  never happens silently. Use `create` (or `callm.complete(...)`) for now. The Responses API's
-  `client.responses.create` is fully intercepted.
+- Streaming helpers that bypass `create` internally: OpenAI's `client.responses.stream` and
+  `client.chat.completions.stream`, `client.responses.parse`, the older
+  `client.beta.chat.completions.parse/stream`, and Anthropic's `client.messages.stream(...)`.
+  Inside a callm function these log a one-time warning naming the protections that do not
+  apply (PII masking, budgets, caching...), so this never happens silently. Use `create`
+  (or `callm.complete(...)`) for now. `client.responses.create` and
+  `client.chat.completions.parse` are fully intercepted.
 - `with_raw_response` calls (intentionally passed through).
 - Calls in threads started without copying the context.
 - Clients callm has no adapter for. Their responses are still recorded in telemetry when the
@@ -37,6 +38,15 @@ and priced with OpenAI's prices. Requests that depend on server-side state or to
 (`previous_response_id`, `conversation`, `tools`, `reasoning`...) never fall back to another
 provider, and `callm.complete("openai-responses/gpt-5-mini", ...)` sends a request through
 the Responses API directly.
+
+## Does callm work with structured outputs (`chat.completions.parse`)?
+
+Yes. `client.chat.completions.parse(..., response_format=MyModel)` gets the same treatment as
+`create`: PII masking, budgets, caching, retries, cost and telemetry. You still get a
+`ParsedChatCompletion` with `.choices[0].message.parsed`, including on a cache hit: callm
+stores the completion and re-runs the SDK's own parser with your `response_format`. The cache
+key includes the response format's JSON schema, so two different models never share an entry.
+Fallbacks stay on OpenAI models, because `response_format` has no equivalent on other providers.
 
 ## What happens with `NOT_GIVEN` arguments?
 

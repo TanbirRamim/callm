@@ -305,7 +305,7 @@ def summarize():   ─────────►  │ 1. Telemetry     cost, la
 ```
 
 1. `@callm` sets a scope (a `ContextVar`) while your function runs.
-2. The official SDK methods (`chat.completions.create`, OpenAI's `responses.create`,
+2. The official SDK methods (`chat.completions.create` and `.parse`, OpenAI's `responses.create`,
    `messages.create`, `models.generate_content`, sync and async) are instrumented on first use. Outside a callm
    scope they call straight through, so importing callm never changes other code.
 3. Inside a scope, the SDK call is converted into a provider-neutral request and sent through
