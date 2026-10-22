@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `examples/quickstart.py`, `examples/async_budgets.py` and `examples/structured_output.py`
+  now explain how to set the API key, and point to `examples/offline_demo.py`, instead of
+  raising the SDK's missing-credentials traceback when no key is set.
+
 ## [0.3.0] - 2026-10-02
 
 ### Added

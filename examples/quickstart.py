@@ -6,9 +6,20 @@ python examples/quickstart.py
 callm stats
 """
 
+import os
+
 import openai
 
 from callm import callm
+
+if not os.environ.get("OPENAI_API_KEY"):
+    raise SystemExit(
+        "No API key found.\n\n"
+        "Set OPENAI_API_KEY in this same terminal window, then run the script again:\n"
+        '  macOS/Linux:  export OPENAI_API_KEY="sk-..."\n'
+        '  PowerShell:   $env:OPENAI_API_KEY="sk-..."\n\n'
+        "No key at all? Try examples/offline_demo.py, which needs none."
+    )
 
 client = openai.OpenAI(max_retries=0)  # let callm own retries
 
