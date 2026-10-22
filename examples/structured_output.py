@@ -5,10 +5,22 @@ export ANTHROPIC_API_KEY=... OPENAI_API_KEY=...
 python examples/structured_output.py
 """
 
+import os
+
 import anthropic
 from pydantic import BaseModel, Field
 
 import callm
+
+if not (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")):
+    raise SystemExit(
+        "No API key found.\n\n"
+        "Set ANTHROPIC_API_KEY in this same terminal window, then run the script again:\n"
+        '  macOS/Linux:  export ANTHROPIC_API_KEY="sk-ant-..."\n'
+        '  PowerShell:   $env:ANTHROPIC_API_KEY="sk-ant-..."\n\n'
+        "Set OPENAI_API_KEY the same way to enable the OpenAI fallback.\n"
+        "No key at all? Try examples/offline_demo.py, which needs none."
+    )
 
 client = anthropic.Anthropic(max_retries=0)
 
