@@ -86,6 +86,7 @@ def test_stats_table(populated, capsys):
         "Hits",
         "Saved",
         "Errors",
+        "Blocked",
         "Latency",
     ]
     assert lines[2].startswith("openai")

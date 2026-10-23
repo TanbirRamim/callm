@@ -72,9 +72,9 @@ fact = fun_fact("octopus")      # -> served from the cache, $0
 
 ```console
 $ callm stats
-Provider   Calls   Tokens     Cost   Cache Hits    Saved   Errors   Latency
-───────────────────────────────────────────────────────────────────────────
-openai         2      212   $0.0001     1 (50%)  $0.0001        0     305ms
+Provider   Calls   Tokens     Cost   Cache Hits    Saved   Errors   Blocked   Latency
+─────────────────────────────────────────────────────────────────────────────────────
+openai         2      212   $0.0001     1 (50%)  $0.0001        0         0     305ms
 ```
 
 ```python

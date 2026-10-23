@@ -68,11 +68,17 @@ class CacheStore(ABC):
         """Release resources."""
 
 
+#: ``error_type`` recorded when a budget refuses a call before it is sent.
+BLOCKED_ERROR_TYPE = "BudgetExceeded"
+
+
 @dataclass
 class AggregateRow:
     key: str
     calls: int = 0
     errors: int = 0
+    #: Calls refused by ``max_cost`` or a ``Budget``; not counted in ``errors``.
+    blocked: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
     cache_read_tokens: int = 0
@@ -103,7 +109,10 @@ class AggregateRow:
 
     def add(self, record: CallRecord) -> None:
         self.calls += 1
-        self.errors += record.status != "ok"
+        if record.error_type == BLOCKED_ERROR_TYPE:
+            self.blocked += 1
+        else:
+            self.errors += record.status != "ok"
         self.input_tokens += record.input_tokens
         self.output_tokens += record.output_tokens
         self.cache_read_tokens += record.cache_read_tokens
@@ -118,6 +127,7 @@ class AggregateRow:
     def merge(self, other: AggregateRow) -> None:
         self.calls += other.calls
         self.errors += other.errors
+        self.blocked += other.blocked
         self.input_tokens += other.input_tokens
         self.output_tokens += other.output_tokens
         self.cache_read_tokens += other.cache_read_tokens
@@ -134,6 +144,7 @@ class AggregateRow:
             "key": self.key,
             "calls": self.calls,
             "errors": self.errors,
+            "blocked": self.blocked,
             "input_tokens": self.input_tokens,
             "output_tokens": self.output_tokens,
             "cache_read_tokens": self.cache_read_tokens,

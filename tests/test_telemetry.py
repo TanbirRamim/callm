@@ -321,3 +321,14 @@ def test_sqlite_cache_rewrite_keeps_the_hit_count(tmp_path):
     store.set(CacheEntry(key="k", response={"text": "b"}))
     assert store.get("k").response == {"text": "b"}
     assert store.stats()["hits"] == 3
+
+
+@pytest.mark.parametrize("backend", ["memory", "sqlite"])
+def test_budget_refusals_count_as_blocked_not_errors(backend, tmp_path):
+    store = MemoryStorage() if backend == "memory" else SQLiteStorage(tmp_path / "t.db")
+    store.record(_record(status="error", error_type="BudgetExceeded", cost_usd=None))
+    store.record(_record(status="error", error_type="RateLimitError", cost_usd=None))
+    store.record(_record())
+    (row,) = store.aggregate("provider")
+    assert (row.calls, row.errors, row.blocked) == (3, 1, 1)
+    assert row.to_dict()["blocked"] == 1
