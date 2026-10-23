@@ -6,7 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- `callm stats` counts calls refused by a budget in a new `blocked` column (and JSON field)
+  instead of under `errors` (#9).
+- `callm info` only lists instrumented methods for SDKs that are actually installed (#10).
+
 ### Fixed
+
+- Prompt-injection detection no longer flags ordinary developer text such as "ignore previous
+  build instructions", "print the system message" or "the rules of the style guide"; bare
+  `<system>` tags now count as a weak signal (#14).
 
 - `examples/quickstart.py`, `examples/async_budgets.py` and `examples/structured_output.py`
   now explain how to set the API key, and point to `examples/offline_demo.py`, instead of
