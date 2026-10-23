@@ -36,6 +36,9 @@ def _p(name: str, regex: str, weight: float) -> InjectionPattern:
 
 _PREVIOUS = r"(?:previous|prior|above|earlier|preceding|foregoing|system|developer)"
 _INSTRUCTIONS = r"(?:instructions?|prompts?|rules|directives|guidelines|constraints)"
+#: Words allowed between "previous" and "instructions". A free \w+ here matched ordinary
+#: developer text such as "ignore previous build instructions".
+_QUALIFIER = r"(?:system|initial|original|given|safety|security|hidden|stated|above)"
 #: Not preceded by a negation ("please don't ignore the previous instructions").
 _NOT_NEGATED = r"(?<!\bnot\s)(?<!n't\s)(?<!never\s)"
 
@@ -44,7 +47,7 @@ PATTERNS: tuple[InjectionPattern, ...] = (
         "ignore_instructions",
         rf"{_NOT_NEGATED}\b(?:ignore|disregard|forget|override)\s+"
         rf"(?:(?:all|any|every|of|the|my|your|these|those)\s+)*"
-        rf"{_PREVIOUS}\s+(?:\w+\s+)?{_INSTRUCTIONS}\b",
+        rf"{_PREVIOUS}\s+(?:{_QUALIFIER}\s+)?{_INSTRUCTIONS}\b",
         0.85,
     ),
     _p(
@@ -61,8 +64,12 @@ PATTERNS: tuple[InjectionPattern, ...] = (
     _p(
         "reveal_system_prompt",
         r"\b(?:reveal|show|print|display|output|repeat|recite|leak|dump|tell\s+me|give\s+me)"
-        r"\b(?:\s+\w+){0,3}?\s+(?:your|the)\s+"
-        r"(?:(?:full|entire|exact|original|hidden|secret|initial)\s+)*"
+        r"\b(?:\s+\w+){0,3}?\s+"
+        # "your system prompt" is aimed at the model; "the system message" is usually a
+        # developer asking about a framework, so "the" needs a qualifier like "hidden".
+        r"(?:your\s+(?:(?:full|entire|exact|original|hidden|secret|initial)\s+)*"
+        r"|the\s+(?:(?:full|entire|exact|original|hidden|secret|initial)\s+)+"
+        r"|the\s+(?=(?:instructions|prompt)\s+above))"
         r"(?:system\s+prompt|system\s+message|initial\s+instructions|hidden\s+instructions"
         r"|instructions\s+above|developer\s+message|prompt\s+above)",
         0.7,
@@ -110,15 +117,20 @@ PATTERNS: tuple[InjectionPattern, ...] = (
     _p(
         "do_not_follow",
         r"\b(?:do\s+not|don't|stop|no\s+longer)\s+(?:follow|obey|adhere\s+to|comply\s+with)\s+"
-        r"(?:your|the|any)\s+(?:\w+\s+)?(?:rules|instructions|guidelines|programming|policies)",
+        r"(?:your|the|any)\s+(?:\w+\s+)?(?:rules|instructions|guidelines|programming|policies)"
+        # "the rules of the old style guide" names some other document, not the model's rules.
+        r"(?!\s+(?:of|for|in|from)\b)",
         0.65,
     ),
     _p(
         "chat_template_tokens",
         r"<\|(?:im_start|im_end|system|user|assistant|endoftext|start_header_id|end_header_id"
-        r"|eot_id)\|>|\[/?INST\]|<<\s*/?SYS\s*>>|<\s*/?\s*(?:system|sys)\s*>",
+        r"|eot_id)\|>|\[/?INST\]|<<\s*/?SYS\s*>>",
         0.6,
     ),
+    # Bare XML-style tags are common in config, docs and prompt templates, so they are
+    # weak evidence on their own.
+    _p("system_tag", r"<\s*/?\s*(?:system|sys)\s*>", 0.3),
     _p(
         "fake_role_header",
         r"(?:^|\n)\s*(?:#{2,}\s*)?(?:system|assistant|developer)\s*(?:message|prompt)?\s*:\s*\S",
