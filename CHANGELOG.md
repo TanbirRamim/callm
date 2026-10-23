@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-23
+
 ### Changed
 
 - `callm stats` counts calls refused by a budget in a new `blocked` column (and JSON field)
@@ -17,7 +19,6 @@ All notable changes to this project are documented here. The format follows
 - Prompt-injection detection no longer flags ordinary developer text such as "ignore previous
   build instructions", "print the system message" or "the rules of the style guide"; bare
   `<system>` tags now count as a weak signal (#14).
-
 - `examples/quickstart.py`, `examples/async_budgets.py` and `examples/structured_output.py`
   now explain how to set the API key, and point to `examples/offline_demo.py`, instead of
   raising the SDK's missing-credentials traceback when no key is set.
@@ -130,7 +131,8 @@ Initial release.
   budgets) from enclosing decorators and shields apply to inner calls.
 - `callm` CLI: `stats`, `calls`, `cache`, `pricing`, `telemetry`, `info`.
 
-[Unreleased]: https://github.com/TanbirRamim/callm/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/TanbirRamim/callm/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/TanbirRamim/callm/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/TanbirRamim/callm/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/TanbirRamim/callm/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/TanbirRamim/callm/compare/v0.1.1...v0.1.2
