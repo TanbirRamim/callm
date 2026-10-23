@@ -236,6 +236,12 @@ def _cmd_telemetry(args: argparse.Namespace) -> int:
     return 0
 
 
+def _sdk_installed(module: str, optional: dict[str, bool]) -> bool:
+    """Whether the package that owns ``module`` was found by the optional package check."""
+    owners = [name for name in optional if module == name or module.startswith(name + ".")]
+    return bool(owners) and optional[max(owners, key=len)]
+
+
 def _cmd_info(args: argparse.Namespace) -> int:
     from callm.config import get_settings
     from callm.interception import PATCH_TARGETS
@@ -272,7 +278,11 @@ def _cmd_info(args: argparse.Namespace) -> int:
         "enabled": settings.enabled,
         "providers": provider_names(),
         "instrumented_methods": sorted(
-            {f"{t.provider}: {t.cls}.{t.method}" for t in PATCH_TARGETS if not t.warn_only}
+            {
+                f"{t.provider}: {t.cls}.{t.method}"
+                for t in PATCH_TARGETS
+                if not t.warn_only and _sdk_installed(t.module, optional)
+            }
         ),
         "optional_packages": optional,
     }

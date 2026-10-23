@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import io
 import json
 import time
@@ -191,3 +192,19 @@ def test_formatting_helpers():
     buffer = io.StringIO()
     cli.render_table([AggregateRow("openai", calls=1, cost_usd=1.0)], "provider", out=buffer)
     assert "Total" not in buffer.getvalue()
+
+
+def test_info_skips_methods_of_missing_sdks(capsys, monkeypatch):
+    real_find_spec = importlib.util.find_spec
+
+    def find_spec(name, *args, **kwargs):
+        if name == "anthropic":
+            return None
+        return real_find_spec(name, *args, **kwargs)
+
+    monkeypatch.setattr(importlib.util, "find_spec", find_spec)
+    _, out, _ = run(capsys, "info")
+    info = json.loads(out)
+    assert info["optional_packages"]["anthropic"] is False
+    assert not any(m.startswith("anthropic:") for m in info["instrumented_methods"])
+    assert "openai: Completions.create" in info["instrumented_methods"]
