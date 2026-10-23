@@ -1205,9 +1205,9 @@ the cost of every call.</p>
 </code></pre></div>
 <h2 id="4-look-at-the-numbers">4. Look at the numbers<a class="headerlink" href="#4-look-at-the-numbers" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">$ </span>callm<span class="w"> </span>stats
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="go">Provider   Calls   Tokens     Cost   Cache Hits    Saved   Errors   Latency</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="go">───────────────────────────────────────────────────────────────────────────</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="go">openai         2      212   $0.0001     1 (50%)  $0.0001        0     305ms</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="go">Provider   Calls   Tokens     Cost   Cache Hits    Saved   Errors   Blocked   Latency</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="go">─────────────────────────────────────────────────────────────────────────────────────</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="go">openai         2      212   $0.0001     1 (50%)  $0.0001        0         0     305ms</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">callm</span><span class="w"> </span><span class="kn">import</span> <span class="n">last_call</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
