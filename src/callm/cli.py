@@ -58,6 +58,7 @@ def _cells(row: AggregateRow) -> list[str]:
         f"{row.cache_hits:,} ({row.cache_hit_rate:.0%})",
         format_money(row.saved_usd),
         f"{row.errors:,}",
+        f"{row.blocked:,}",
         f"{row.avg_latency_ms:,.0f}ms",
     ]
 
@@ -73,6 +74,7 @@ def render_table(rows: Sequence[AggregateRow], by: str, out: TextIO | None = Non
         "Cache Hits",
         "Saved",
         "Errors",
+        "Blocked",
         "Latency",
     ]
     body = [_cells(row) for row in rows]

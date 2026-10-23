@@ -13,7 +13,14 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-from callm.storage.base import AGGREGATE_KEYS, AggregateRow, CacheEntry, CacheStore, TelemetryStore
+from callm.storage.base import (
+    AGGREGATE_KEYS,
+    BLOCKED_ERROR_TYPE,
+    AggregateRow,
+    CacheEntry,
+    CacheStore,
+    TelemetryStore,
+)
 from callm.types import CallRecord
 
 SCHEMA_VERSION = 1
@@ -370,7 +377,8 @@ class SQLiteStorage(CacheStore, TelemetryStore):
         where, params = self._where(since, until, function)
         sql = (
             f"SELECT COALESCE({by}, 'unknown') AS key, COUNT(*) AS calls,"
-            " SUM(status != 'ok') AS errors,"
+            " SUM(status != 'ok' AND COALESCE(error_type, '') != ?) AS errors,"
+            " SUM(COALESCE(error_type, '') = ?) AS blocked,"
             " SUM(input_tokens) AS input_tokens, SUM(output_tokens) AS output_tokens,"
             " SUM(cache_read_tokens) AS cache_read_tokens,"
             " SUM(cache_write_tokens) AS cache_write_tokens,"
@@ -381,12 +389,13 @@ class SQLiteStorage(CacheStore, TelemetryStore):
             " ORDER BY cost_usd DESC, calls DESC, key ASC"
         )
         with self._db() as db:
-            rows = db.execute(sql, params).fetchall()
+            rows = db.execute(sql, [BLOCKED_ERROR_TYPE, BLOCKED_ERROR_TYPE, *params]).fetchall()
         return [
             AggregateRow(
                 key=row["key"],
                 calls=row["calls"] or 0,
                 errors=row["errors"] or 0,
+                blocked=row["blocked"] or 0,
                 input_tokens=row["input_tokens"] or 0,
                 output_tokens=row["output_tokens"] or 0,
                 cache_read_tokens=row["cache_read_tokens"] or 0,

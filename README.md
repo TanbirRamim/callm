@@ -194,9 +194,9 @@ print(ask("What is the capital of France?"))
 
 ```console
 $ callm stats
-Provider   Calls   Tokens    Cost   Cache Hits   Saved   Errors   Latency
-──────────────────────────────────────────────────────────────────────────
-openai         1       31   $0.0000     0 (0%)   $0.00        0     412ms
+Provider   Calls   Tokens    Cost   Cache Hits   Saved   Errors   Blocked   Latency
+────────────────────────────────────────────────────────────────────────────────────
+openai         1       31   $0.0000     0 (0%)   $0.00        0         0     412ms
 ```
 
 ## Features
