@@ -53,6 +53,7 @@ Documentation = "https://tanbirramim.github.io/callm"
 Repository = "https://github.com/TanbirRamim/callm"
 Issues = "https://github.com/TanbirRamim/callm/issues"
 Changelog = "https://github.com/TanbirRamim/callm/blob/main/CHANGELOG.md"
+"Project page" = "https://tanbirramim.com/projects/callm"
 
 [dependency-groups]
 dev = [
