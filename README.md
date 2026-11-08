@@ -426,4 +426,4 @@ If callm is useful to you, a star helps other people find it.
 
 ## License
 
-[MIT](https://github.com/TanbirRamim/callm/blob/main/LICENSE)
+[MIT](https://github.com/TanbirRamim/callm/blob/main/LICENSE). Made by [Tanbir Hossain Ramim](https://tanbirramim.com/projects/callm).
